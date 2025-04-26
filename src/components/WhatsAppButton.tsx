@@ -15,7 +15,7 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({ message = "Hola! Me com
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="whatsapp-float"
+      className="whatsapp-float right-6 left-auto"
       aria-label="Contactar por WhatsApp"
     >
       <MessageCircle size={26} />
