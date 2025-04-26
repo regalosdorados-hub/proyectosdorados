@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
@@ -34,14 +33,12 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
   );
   const [discount, setDiscount] = useState<number>(0);
   
-  // Lazy load thumbnails only when modal is opened
   useEffect(() => {
     if (isOpen && loadedThumbnails.length === 0) {
       setLoadedThumbnails(product.thumbnails);
     }
   }, [isOpen, product.thumbnails, loadedThumbnails.length]);
 
-  // Calculate discount based on quantity
   useEffect(() => {
     if (quantity >= 10) {
       setDiscount(0.14); // 14% discount for 10+ items
@@ -52,11 +49,14 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
     }
   }, [quantity]);
 
-  // Calculate final price
   const getDiscountedPrice = () => {
     return product.price * (1 - discount);
   };
-  
+
+  const getTotalPrice = () => {
+    return getDiscountedPrice() * quantity;
+  };
+
   const handleQuantityChange = (newQuantity: number) => {
     setQuantity(newQuantity);
   };
@@ -72,7 +72,7 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
   const getWhatsAppLink = () => {
     const selectedFormatName = product.formats.find(format => format.id === selectedFormat)?.name || '';
     const discountedPrice = getDiscountedPrice();
-    const totalPrice = discountedPrice * quantity;
+    const totalPrice = getTotalPrice();
     
     const message = encodeURIComponent(
       `Hola! Estoy interesado en comprar el producto "${product.name}" con las siguientes características:\n` +
@@ -94,7 +94,6 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
         className="product-modal-content fade-in"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close button */}
         <button 
           className="absolute top-4 right-4 p-1 text-gray-500 hover:text-gray-800 transition-colors"
           onClick={onClose}
@@ -103,7 +102,6 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
         </button>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-          {/* Product images */}
           <div className="space-y-4">
             <div className="rounded-lg overflow-hidden border border-gray-200">
               <img 
@@ -113,7 +111,6 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
               />
             </div>
             
-            {/* Thumbnails */}
             <div className="flex flex-wrap gap-2">
               <div 
                 className={`w-16 h-16 rounded border-2 cursor-pointer overflow-hidden ${
@@ -146,32 +143,35 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
             </div>
           </div>
           
-          {/* Product info */}
           <div className="space-y-6">
             <div>
               <p className="text-sm text-gray-500 mb-1">Categoría: {product.category}</p>
               <h1 className="text-2xl md:text-3xl font-playfair font-medium">{product.name}</h1>
               <div className="mt-4 mb-6">
-                <p className="text-xl font-medium text-mandarina">
-                  ${getDiscountedPrice().toFixed(2)}
-                  {discount > 0 && (
-                    <span className="text-sm text-gray-500 line-through ml-2">
-                      ${product.price.toFixed(2)}
-                    </span>
-                  )}
-                </p>
-                {discount > 0 && (
-                  <p className="text-sm text-green-600 font-medium mt-1">
-                    ¡{(discount * 100).toFixed(0)}% de descuento aplicado!
+                <div className="flex flex-col gap-1">
+                  <p className="text-xl font-medium text-mandarina">
+                    Precio unitario: ${getDiscountedPrice().toFixed(2)}
+                    {discount > 0 && (
+                      <span className="text-sm text-gray-500 line-through ml-2">
+                        ${product.price.toFixed(2)}
+                      </span>
+                    )}
                   </p>
-                )}
+                  <p className="text-lg font-medium text-gray-700">
+                    Precio total: ${getTotalPrice().toFixed(2)}
+                  </p>
+                  {discount > 0 && (
+                    <p className="text-sm text-green-600 font-medium">
+                      ¡{(discount * 100).toFixed(0)}% de descuento aplicado!
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
             
             <p className="text-gray-600">{product.description}</p>
             
             <div className="space-y-4">
-              {/* Format selector */}
               <div>
                 <h3 className="font-medium mb-2">Formato</h3>
                 <div className="flex flex-wrap gap-2">
@@ -192,7 +192,6 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
                 </div>
               </div>
               
-              {/* Quantity selector */}
               <div>
                 <h3 className="font-medium mb-2">Cantidad</h3>
                 <div className="flex flex-wrap gap-2">
@@ -216,7 +215,6 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
                 </div>
               </div>
               
-              {/* WhatsApp button */}
               <div className="pt-4">
                 <a
                   href={getWhatsAppLink()}
