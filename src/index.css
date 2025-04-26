@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -33,22 +34,6 @@
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
@@ -79,14 +64,6 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -96,6 +73,64 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-montserrat;
   }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-playfair;
+  }
+}
+
+/* Transiciones suaves para la navegación */
+.page-transition {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* Estilo para el navbar con blur */
+.navbar-blur {
+  @apply bg-white/80 backdrop-blur-sm transition-all duration-300;
+}
+
+/* Estilo para botón de WhatsApp flotante */
+.whatsapp-float {
+  @apply fixed bottom-6 left-6 z-50 flex items-center justify-center w-14 h-14 
+  rounded-full bg-green-500 text-white shadow-lg hover:bg-green-600 transition-all 
+  duration-300 hover:scale-110;
+}
+
+/* Estilo para productos */
+.product-card {
+  @apply bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300
+  hover:shadow-xl hover:-translate-y-1;
+}
+
+/* Estilo para imágenes de productos */
+.product-image {
+  @apply w-full h-64 object-cover object-center transition-all duration-300;
+}
+
+/* Estilo para el modal de producto */
+.product-modal {
+  @apply fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black/50
+  transition-all duration-300;
+}
+
+.product-modal-content {
+  @apply bg-white rounded-lg shadow-2xl overflow-hidden max-w-4xl w-full max-h-[90vh]
+  overflow-y-auto relative transition-all duration-300;
+}
+
+/* Estilo pencil sketch para elementos decorativos */
+.pencil-sketch {
+  filter: grayscale(100%) contrast(120%);
+}
+
+/* Animaciones para los elementos */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
 }
