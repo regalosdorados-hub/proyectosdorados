@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, Share2, Instagram } from 'lucide-react';
 
 interface ProductFormat {
   id: string;
@@ -86,6 +86,13 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
     return `https://wa.me/5491100000000?text=${message}`;
   };
 
+  const getFacebookShareLink = () => {
+    const shareUrl = `${window.location.origin}${window.location.pathname}`;
+    return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(
+      `¡Mira este increíble delantal "${product.name}" de Mandarina Delantales!\n\n${product.description}\n\nVisita nuestra web para adquirirlo.`
+    )}`;
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -145,8 +152,33 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
           
           <div className="space-y-6">
             <div>
-              <p className="text-sm text-gray-500 mb-1">Categoría: {product.category}</p>
-              <h1 className="text-2xl md:text-3xl font-playfair font-medium">{product.name}</h1>
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Categoría: {product.category}</p>
+                  <h1 className="text-2xl md:text-3xl font-playfair font-medium">{product.name}</h1>
+                </div>
+                <div className="flex gap-2">
+                  <a
+                    href="https://instagram.com/mandarina.delantales"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 text-gray-600 hover:text-mandarina transition-colors"
+                    title="Síguenos en Instagram"
+                  >
+                    <Instagram size={24} />
+                  </a>
+                  <a
+                    href={getFacebookShareLink()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+                    title="Compartir en Facebook"
+                  >
+                    <Share2 size={24} />
+                  </a>
+                </div>
+              </div>
+              
               <div className="mt-4 mb-6">
                 <div className="flex flex-col gap-1">
                   <p className="text-xl font-medium text-mandarina">
