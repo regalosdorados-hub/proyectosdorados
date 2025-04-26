@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link as ScrollLink } from 'react-scroll';
 
 const Hero: React.FC = () => {
   return (
@@ -20,12 +20,15 @@ const Hero: React.FC = () => {
             </p>
             
             <div className="mt-10 space-x-4">
-              <Link 
-                to="/delantales-bachero" 
-                className="px-6 py-3 bg-mandarina text-white rounded-lg font-medium hover:bg-mandarina-dark transition-colors duration-300"
+              <ScrollLink 
+                to="categories-section"
+                smooth={true}
+                duration={800}
+                offset={-100}
+                className="px-6 py-3 bg-mandarina text-white rounded-lg font-medium hover:bg-mandarina-dark transition-colors duration-300 cursor-pointer"
               >
-                Ver colección
-              </Link>
+                Ver categorías
+              </ScrollLink>
               <a
                 href="https://wa.me/5491100000000?text=Hola!%20Me%20interesa%20conocer%20más%20sobre%20sus%20delantales"
                 target="_blank"
@@ -41,7 +44,7 @@ const Hero: React.FC = () => {
             <div className="relative z-10 animate-float">
               <img 
                 src="https://images.unsplash.com/photo-1581299894007-aaa50297cf16?q=80&w=1974&auto=format&fit=crop" 
-                alt="Delantal Premium" 
+                alt="Delantal Premium Mandarina - Elegancia y calidad en cada detalle" 
                 className="w-full h-auto rounded-lg shadow-xl"
               />
               

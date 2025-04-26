@@ -3,6 +3,7 @@ import React from 'react';
 import Hero from '../components/Hero';
 import FeaturedProducts from '../components/FeaturedProducts';
 import CategorySection from '../components/CategorySection';
+import FAQ from '../components/FAQ';
 import WhatsAppButton from '../components/WhatsAppButton';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -15,6 +16,7 @@ const Index: React.FC = () => {
         <Hero />
         <FeaturedProducts />
         <CategorySection />
+        <FAQ />
       </main>
       <Footer />
       <WhatsAppButton />
