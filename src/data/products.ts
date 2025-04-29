@@ -1,3 +1,4 @@
+
 export interface ProductFormat {
   id: string;
   name: string;
@@ -82,7 +83,6 @@ export const products: Product[] = [
     price: 5000,
     mainImage: '/delantales-peluqueria/Delantal con bolsillo 3.jpg',
     thumbnails: [
-      '/delantales-peluqueria/Cartucheras con bolsillos para peluquero (1).png',
       '/delantales-peluqueria/Delantal con bolsillo 3.jpg'
     ],
     formats: [
@@ -99,7 +99,6 @@ export const products: Product[] = [
     price: 7000,
     mainImage: '/delantales-peluqueria/Cartucheras con bolsillos para peluquero (1).png',
     thumbnails: [
-      '/delantales-peluqueria/Delantal con bolsillo 3.jpg',
       '/delantales-peluqueria/Cartucheras con bolsillos para peluquero (1).png'
     ],
     formats: [
