@@ -83,7 +83,7 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
       `¿Podrían brindarme más información sobre disponibilidad y envío?`
     );
     
-    return `https://wa.me/5491100000000?text=${message}`;
+    return `https://wa.me/5492901464534?text=${message}`;
   };
 
   const getFacebookShareLink = () => {

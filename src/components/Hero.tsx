@@ -30,7 +30,7 @@ const Hero: React.FC = () => {
                 Ver categorías
               </ScrollLink>
               <a
-                href="https://wa.me/5491100000000?text=Hola!%20Me%20interesa%20conocer%20más%20sobre%20sus%20delantales"
+                href="https://wa.me/5492901464534?text=Hola!%20Me%20interesa%20conocer%20más%20sobre%20sus%20delantales"
                 target="_blank"
                 rel="noopener noreferrer" 
                 className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-300"
@@ -43,7 +43,7 @@ const Hero: React.FC = () => {
           <div className="order-1 md:order-2 relative">
             <div className="relative z-10 animate-float">
               <img 
-                src="https://images.unsplash.com/photo-1581299894007-aaa50297cf16?q=80&w=1974&auto=format&fit=crop" 
+                src="public/portada.png" 
                 alt="Delantal Premium Mandarina - Elegancia y calidad en cada detalle" 
                 className="w-full h-auto rounded-lg shadow-xl"
               />

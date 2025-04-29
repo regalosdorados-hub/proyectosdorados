@@ -8,7 +8,7 @@ interface WhatsAppButtonProps {
 
 const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({ message = "Hola! Me comunico desde su sitio web" }) => {
   const encodedMessage = encodeURIComponent(message);
-  const whatsappUrl = `https://wa.me/5491100000000?text=${encodedMessage}`;
+  const whatsappUrl = `https://wa.me/5492901464534?text=${encodedMessage}`;
   
   return (
     <a 
