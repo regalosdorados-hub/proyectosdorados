@@ -36,7 +36,8 @@ const VeterinariaPage: React.FC = () => {
               <p className="text-gray-600 max-w-2xl mx-auto">
                 Delantales especializados para profesionales de veterinaria, peluquería canina y asistentes. 
                 Confeccionados con materiales impermeables y resistentes para proporcionar protección durante 
-                procedimientos clínicos y baños de mascotas.
+                procedimientos clínicos y baños de mascotas. Disponemos de varios modelos, desde tela con bolsillos
+                hasta impermeables y estampados.
               </p>
             </div>
             
