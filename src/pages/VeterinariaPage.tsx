@@ -6,6 +6,7 @@ import WhatsAppButton from '../components/WhatsAppButton';
 import ProductCard from '../components/ProductCard';
 import ProductView from '../components/ProductView';
 import { getProductsByCategory, Product } from '../data/products';
+import { Card, CardContent } from '@/components/ui/card';
 
 const VeterinariaPage: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -33,8 +34,9 @@ const VeterinariaPage: React.FC = () => {
             <div className="text-center mb-12">
               <h1 className="font-playfair text-3xl md:text-4xl font-medium text-gray-800 mb-4">Delantales para Veterinaria</h1>
               <p className="text-gray-600 max-w-2xl mx-auto">
-                Delantales especializados para profesionales de veterinaria y asistentes. Confeccionados con materiales 
-                impermeables y resistentes para proporcionar protección durante procedimientos clínicos y baños.
+                Delantales especializados para profesionales de veterinaria, peluquería canina y asistentes. 
+                Confeccionados con materiales impermeables y resistentes para proporcionar protección durante 
+                procedimientos clínicos y baños de mascotas.
               </p>
             </div>
             
@@ -49,9 +51,11 @@ const VeterinariaPage: React.FC = () => {
             </div>
             
             {products.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-gray-600">No se encontraron productos en esta categoría.</p>
-              </div>
+              <Card className="my-8">
+                <CardContent className="text-center py-12">
+                  <p className="text-gray-600">No se encontraron productos en esta categoría.</p>
+                </CardContent>
+              </Card>
             )}
           </div>
         </section>

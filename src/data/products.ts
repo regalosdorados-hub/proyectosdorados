@@ -118,8 +118,9 @@ export const products: Product[] = [
     price: 11000,
     mainImage: '/delantales-veterinaria/Delantal de Tela  Veterinaria.jpg',
     thumbnails: [
-      '/delantales-veterinaria/Delantal de Tela para Veterinaria.jpg',
-      '/delantales-veterinaria/Delantal de Tela  Veterinaria.jpg'
+      '/delantales-veterinaria/Delantal de Tela  Veterinaria.jpg',
+      '/delantales-veterinaria/Delantal de bagun con dibujos.jpg',
+      '/delantales-veterinaria/Delantal bagún estampado (0,80 cm X 0,75cm)Ideal para Peluqueria Canina.jpg'
     ],
     formats: [
       { id: 'liso', name: 'Liso', available: true },
@@ -133,14 +134,46 @@ export const products: Product[] = [
     name: 'Delantal para Veterinaria Impermeable con bolsillo (0,80cm)',
     description: 'Delantal impermeable para veterinarios con bolsillo y 0,80cm de largo. Material especialmente diseñado para protección completa durante baños de mascotas y procedimientos que involucren líquidos.',
     price: 10000,
-    mainImage: '/delantales-veterinaria/Delantal de Tela para Veterinaria.jpg',
+    mainImage: '/delantales-veterinaria/Delantal de Bagún color  con bolsillo transparente(0,75cm X0,80cm).jpg',
     thumbnails: [
-      '/delantales-veterinaria/Delantal de Tela  Veterinaria.jpg',
-      '/delantales-veterinaria/Delantal de Tela para Veterinaria.jpg'
+      '/delantales-veterinaria/Delantal de Bagún color  con bolsillo transparente(0,75cm X0,80cm).jpg',
+      '/delantales-veterinaria/Delantal de Bagún color (0,75cm X1,20cm).jpg'
     ],
     formats: [
       { id: 'liso', name: 'Liso', available: true },
       { id: 'estampado', name: 'Estampado', available: true }
+    ],
+    category: 'Delantales Veterinaria'
+  },
+  {
+    id: 'veterinaria-estampado-canino',
+    name: 'Delantal Bagún Estampado para Peluquería Canina',
+    description: 'Delantal bagún con estampados especiales para peluquería canina. Diseñado con materiales resistentes y divertidos estampados que hacen más ameno el trabajo con mascotas.',
+    price: 11000,
+    mainImage: '/delantales-veterinaria/Delantal bagún estampado (0,80 cm X 0,75cm)Ideal para Peluqueria Canina.jpg',
+    thumbnails: [
+      '/delantales-veterinaria/Delantal bagún estampado (0,80 cm X 0,75cm)Ideal para Peluqueria Canina.jpg',
+      '/delantales-veterinaria/Delantal bagún estampado 2 (0,80 cm X 0,75cm)Ideal para Peluqueria Canina.jpg'
+    ],
+    formats: [
+      { id: 'estampado-perro', name: 'Estampado Perro', available: true },
+      { id: 'estampado-hueso', name: 'Estampado Hueso', available: true }
+    ],
+    category: 'Delantales Veterinaria'
+  },
+  {
+    id: 'veterinaria-plastico-transparente',
+    name: 'Delantal Plástico Cristal Ahumado',
+    description: 'Delantal impermeable de plástico cristal ahumado, especial para procedimientos que requieren máxima protección contra líquidos. Liviano y completamente impermeable.',
+    price: 9000,
+    mainImage: '/delantales-veterinaria/de plastico  cristal ahumado.bmp',
+    thumbnails: [
+      '/delantales-veterinaria/de plastico  cristal ahumado.bmp',
+      '/delantales-veterinaria/Delantal de Bagún color  con bolsillo transparente(0,75cm X0,80cm).jpg'
+    ],
+    formats: [
+      { id: 'transparente', name: 'Transparente', available: true },
+      { id: 'ahumado', name: 'Ahumado', available: true }
     ],
     category: 'Delantales Veterinaria'
   }
