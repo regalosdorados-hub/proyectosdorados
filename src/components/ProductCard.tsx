@@ -31,7 +31,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
     >
       <div className="relative overflow-hidden">
         <img 
-          src={product.mainImage} 
+          src={`/${product.mainImage}`} 
           alt={product.name}
           className="product-image group-hover:scale-105" 
         />
