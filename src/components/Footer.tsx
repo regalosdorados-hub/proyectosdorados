@@ -30,9 +30,9 @@ const Footer: React.FC = () => {
               
               <div>
                 <h3 className="font-playfair text-gray-800 font-medium mb-3">Contacto</h3>
-                <p className="text-gray-600 mb-1">Buenos Aires, Argentina</p>
+                <p className="text-gray-600 mb-1">Córdoba, Argentina</p>
                 <a href="mailto:info@mandarinadelantales.com" className="text-gray-600 hover:text-mandarina transition-colors break-all">
-                  info@mandarinadelantales.com
+                  instagram: @mandarinadelantales
                 </a>
               </div>
             </div>
