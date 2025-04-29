@@ -11,7 +11,7 @@ const BacheroPage: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
-  const products = getProductsByCategory('Bachero');
+  const products = getProductsByCategory('Gastronomía');
   
   const openProductModal = (product: Product) => {
     setSelectedProduct(product);
@@ -31,7 +31,7 @@ const BacheroPage: React.FC = () => {
         <section className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
-              <h1 className="font-playfair text-3xl md:text-4xl font-medium text-gray-800 mb-4">Delantales Bachero</h1>
+              <h1 className="font-playfair text-3xl md:text-4xl font-medium text-gray-800 mb-4">Delantales para Gastronomía</h1>
               <p className="text-gray-600 max-w-2xl mx-auto">
                 Nuestra colección de delantales para chefs y cocineros profesionales. Diseñados con materiales de alta calidad 
                 y atención al detalle para brindar la mejor comodidad y funcionalidad en la cocina.

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { X, Share2, Instagram } from 'lucide-react';
 
@@ -41,9 +42,9 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
 
   useEffect(() => {
     if (quantity >= 10) {
-      setDiscount(0.14); // 14% discount for 10+ items
+      setDiscount(0.20); // 20% discount for 10+ items (corresponds to Precio Descuento 2)
     } else if (quantity >= 5) {
-      setDiscount(0.07); // 7% discount for 5+ items
+      setDiscount(0.10); // 10% discount for 5+ items (corresponds to Precio Descuento 1)
     } else {
       setDiscount(0);
     }
@@ -236,13 +237,13 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
                     label="5 unidades" 
                     isSelected={quantity === 5}
                     onClick={() => handleQuantityChange(5)}
-                    discount="7% OFF"
+                    discount="10% OFF"
                   />
                   <QuantityButton
                     label="10 unidades" 
                     isSelected={quantity === 10}
                     onClick={() => handleQuantityChange(10)}
-                    discount="14% OFF"
+                    discount="20% OFF"
                   />
                 </div>
               </div>
