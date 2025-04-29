@@ -6,7 +6,6 @@ import WhatsAppButton from '../components/WhatsAppButton';
 import ProductCard from '../components/ProductCard';
 import ProductView from '../components/ProductView';
 import { getProductsByCategory, Product } from '../data/products';
-import { Card, CardContent } from '@/components/ui/card';
 
 const BacheroPage: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -50,11 +49,9 @@ const BacheroPage: React.FC = () => {
             </div>
             
             {products.length === 0 && (
-              <Card className="my-8">
-                <CardContent className="text-center py-12">
-                  <p className="text-gray-600">No se encontraron productos en esta categoría.</p>
-                </CardContent>
-              </Card>
+              <div className="text-center py-12">
+                <p className="text-gray-600">No se encontraron productos en esta categoría.</p>
+              </div>
             )}
           </div>
         </section>

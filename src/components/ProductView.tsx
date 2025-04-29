@@ -26,7 +26,7 @@ interface ProductViewProps {
 }
 
 const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) => {
-  const [selectedImage, setSelectedImage] = useState<string>(`/${product.mainImage}`);
+  const [selectedImage, setSelectedImage] = useState<string>(product.mainImage);
   const [loadedThumbnails, setLoadedThumbnails] = useState<string[]>([]);
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedFormat, setSelectedFormat] = useState<string | null>(
@@ -36,7 +36,7 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
   
   useEffect(() => {
     if (isOpen && loadedThumbnails.length === 0) {
-      setLoadedThumbnails(product.thumbnails.map(thumb => `/${thumb}`));
+      setLoadedThumbnails(product.thumbnails);
     }
   }, [isOpen, product.thumbnails, loadedThumbnails.length]);
 
@@ -122,12 +122,12 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
             <div className="flex flex-wrap gap-2">
               <div 
                 className={`w-16 h-16 rounded border-2 cursor-pointer overflow-hidden ${
-                  selectedImage === `/${product.mainImage}` ? 'border-mandarina' : 'border-gray-200'
+                  selectedImage === product.mainImage ? 'border-mandarina' : 'border-gray-200'
                 }`}
-                onClick={() => handleImageClick(`/${product.mainImage}`)}
+                onClick={() => handleImageClick(product.mainImage)}
               >
                 <img 
-                  src={`/${product.mainImage}`} 
+                  src={product.mainImage} 
                   alt={`${product.name} thumbnail`} 
                   className="w-full h-full object-cover object-center" 
                 />
