@@ -43,7 +43,7 @@ const Hero: React.FC = () => {
           <div className="order-1 md:order-2 relative">
             <div className="relative z-10 animate-float">
               <img 
-                src="public/portada.png" 
+                src="portada.png" 
                 alt="Delantal Premium Mandarina - Elegancia y calidad en cada detalle" 
                 className="w-full h-auto rounded-lg shadow-xl"
               />
