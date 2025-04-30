@@ -8,11 +8,11 @@ import ProductView from '../components/ProductView';
 import { getProductsByCategory, Product } from '../data/products';
 import { Card, CardContent } from '@/components/ui/card';
 
-const VeterinariaPage: React.FC = () => {
+const BacheroPage: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
-  const products = getProductsByCategory('Veterinaria');
+  const products = getProductsByCategory('Gastronomía');
   
   const openProductModal = (product: Product) => {
     setSelectedProduct(product);
@@ -32,12 +32,10 @@ const VeterinariaPage: React.FC = () => {
         <section className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
-              <h1 className="font-playfair text-3xl md:text-4xl font-medium text-gray-800 mb-4">Delantales para Veterinaria</h1>
+              <h1 className="font-playfair text-3xl md:text-4xl font-medium text-gray-800 mb-4">Delantales para Gastronomía</h1>
               <p className="text-gray-600 max-w-2xl mx-auto">
-                Delantales especializados para profesionales de veterinaria, peluquería canina y asistentes. 
-                Confeccionados con materiales impermeables y resistentes para proporcionar protección durante 
-                procedimientos clínicos y baños de mascotas. Disponemos de varios modelos, desde tela con bolsillos
-                hasta impermeables y estampados.
+                Nuestra colección de delantales para chefs y cocineros profesionales. Diseñados con materiales de alta calidad 
+                y atención al detalle para brindar la mejor comodidad y funcionalidad en la cocina.
               </p>
             </div>
             
@@ -75,4 +73,4 @@ const VeterinariaPage: React.FC = () => {
   );
 };
 
-export default VeterinariaPage;
+export default BacheroPage;
