@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
             <div className="mb-6 md:mb-0">
               <div className="flex items-center">
                 <span className="font-petit text-mandarina text-2xl">Mandarina</span>
-                <span className="font-playfair ml-1 text-xl">Delantales</span>
+                <span className="font-playfair ml-1 text-xl">Delantales y algo más...</span>
               </div>
               <p className="mt-2 text-gray-600 max-w-sm">
                 Elegancia y funcionalidad en cada detalle. Delantales artesanales de alta calidad para profesionales.
@@ -31,9 +31,9 @@ const Footer: React.FC = () => {
               <div>
                 <h3 className="font-playfair text-gray-800 font-medium mb-3">Contacto</h3>
                 <p className="text-gray-600 mb-1">Córdoba, Argentina</p>
-                <a href="mailto:info@mandarinadelantales.com" className="text-gray-600 hover:text-mandarina transition-colors break-all">
+                <p className="text-gray-600 hover:text-mandarina transition-colors break-all">
                   instagram: @mandarinadelantales
-                </a>
+                </p>
               </div>
             </div>
           </div>

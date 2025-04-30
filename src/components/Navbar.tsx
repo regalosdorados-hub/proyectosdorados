@@ -31,13 +31,18 @@ const Navbar: React.FC = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center page-transition">
             <span className="font-petit text-mandarina text-2xl md:text-3xl">Mandarina</span>
-            <span className="font-playfair ml-1 text-xl md:text-2xl">Delantales</span>
+            <span className="font-playfair ml-1 text-xl md:text-2xl">Delantales y algo más...</span>
           </Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-6">
             <NavLink to="/">Inicio</NavLink>
+<<<<<<< Updated upstream
             <NavLink to="/delantales-gastronomico">Gastronómico</NavLink>
+=======
+            <NavLink to="/delantales-bachero">Gastronómíco</NavLink>
+            <NavLink to="/delantales-tela">Tela</NavLink>
+>>>>>>> Stashed changes
             <NavLink to="/delantales-peluqueria">Peluquería</NavLink>
             <NavLink to="/delantales-veterinaria">Veterinaria</NavLink>
           </div>
