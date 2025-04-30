@@ -37,8 +37,7 @@ const Navbar: React.FC = () => {
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-6">
             <NavLink to="/">Inicio</NavLink>
-            <NavLink to="/delantales-bachero">Bachero</NavLink>
-            <NavLink to="/delantales-tela">Tela</NavLink>
+            <NavLink to="/delantales-gastronomico">Gastronómico</NavLink>
             <NavLink to="/delantales-peluqueria">Peluquería</NavLink>
             <NavLink to="/delantales-veterinaria">Veterinaria</NavLink>
           </div>
@@ -68,8 +67,7 @@ const Navbar: React.FC = () => {
           <div className="md:hidden bg-white py-4 mt-3 rounded-lg shadow-lg fade-in">
             <div className="flex flex-col items-center space-y-4">
               <MobileNavLink to="/" onClick={toggleMobileMenu}>Inicio</MobileNavLink>
-              <MobileNavLink to="/delantales-bachero" onClick={toggleMobileMenu}>Bachero</MobileNavLink>
-              <MobileNavLink to="/delantales-tela" onClick={toggleMobileMenu}>Tela</MobileNavLink>
+              <MobileNavLink to="/delantales-gastronomico" onClick={toggleMobileMenu}>Gastronómico</MobileNavLink>
               <MobileNavLink to="/delantales-peluqueria" onClick={toggleMobileMenu}>Peluquería</MobileNavLink>
               <MobileNavLink to="/delantales-veterinaria" onClick={toggleMobileMenu}>Veterinaria</MobileNavLink>
             </div>

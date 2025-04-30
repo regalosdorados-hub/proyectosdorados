@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Instagram } from 'lucide-react';
 
@@ -21,8 +22,7 @@ const Footer: React.FC = () => {
               <div>
                 <h3 className="font-playfair text-gray-800 font-medium mb-3">Categorías</h3>
                 <ul className="space-y-2">
-                  <FooterLink to="/delantales-bachero">Delantales Bachero</FooterLink>
-                  <FooterLink to="/delantales-tela">Delantales de Tela</FooterLink>
+                  <FooterLink to="/delantales-gastronomico">Delantales Gastronómico</FooterLink>
                   <FooterLink to="/delantales-peluqueria">Delantales Peluquería</FooterLink>
                   <FooterLink to="/delantales-veterinaria">Delantales Veterinaria</FooterLink>
                 </ul>

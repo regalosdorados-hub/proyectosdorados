@@ -7,11 +7,11 @@ import ProductCard from '../components/ProductCard';
 import ProductView from '../components/ProductView';
 import { getProductsByCategory, Product } from '../data/products';
 
-const TelaPage: React.FC = () => {
+const GastronomicoPage: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
-  const products = getProductsByCategory('Tela');
+  const products = getProductsByCategory('Gastronomía');
   
   const openProductModal = (product: Product) => {
     setSelectedProduct(product);
@@ -31,10 +31,10 @@ const TelaPage: React.FC = () => {
         <section className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
-              <h1 className="font-playfair text-3xl md:text-4xl font-medium text-gray-800 mb-4">Delantales de Tela</h1>
+              <h1 className="font-playfair text-3xl md:text-4xl font-medium text-gray-800 mb-4">Delantales para Gastronomía</h1>
               <p className="text-gray-600 max-w-2xl mx-auto">
-                Descubra nuestra colección de delantales de tela, ideales para uso en el hogar o pequeños emprendimientos. 
-                Confeccionados con telas de calidad y diseños elegantes para expresar su estilo.
+                Nuestra colección de delantales gastronómicos para chefs y cocineros profesionales. Diseñados con materiales de alta calidad 
+                y atención al detalle para brindar la mejor comodidad y funcionalidad en la cocina.
               </p>
             </div>
             
@@ -70,4 +70,4 @@ const TelaPage: React.FC = () => {
   );
 };
 
-export default TelaPage;
+export default GastronomicoPage;

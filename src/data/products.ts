@@ -18,15 +18,15 @@ export interface Product {
 }
 
 export const products: Product[] = [
-  // Delantales Gastronomía (Bachero)
+  // Delantales Gastronomía (Gastronómico)
   {
     id: 'bachero-bagun-80cm',
-    name: 'Delantal Bachero (Bagún de 0,80cm de largo)',
-    description: 'Delantal tipo bachero confeccionado en material Bagún resistente con 0,80cm de largo. Ideal para chefs y cocineros profesionales que buscan durabilidad y estilo.',
+    name: 'Delantal Gastronómico (Bagún de 0,80cm de largo)',
+    description: 'Delantal tipo gastronómico confeccionado en material Bagún resistente con 0,80cm de largo. Ideal para chefs y cocineros profesionales que buscan durabilidad y estilo.',
     price: 10000,
-    mainImage: '/delantales-bachero/Delantales de tela para panaderia.jpg',
+    mainImage: 'delantales-bachero/Delantales de tela para panaderia.jpg',
     thumbnails: [
-      '/delantales-bachero/Delantales de tela para panaderia.jpg'
+      'delantales-bachero/Delantales de tela para panaderia.jpg'
     ],
     formats: [
       { id: 'blanco', name: 'Blanco', available: true },
@@ -40,12 +40,12 @@ export const products: Product[] = [
   },
   {
     id: 'bachero-bagun-120cm',
-    name: 'Delantal Bachero (Bagún de 1,20cm de largo)',
-    description: 'Delantal de tipo bachero confeccionado en material Bagún premium con 1,20cm de largo, ofreciendo mayor cobertura. Perfecto para trabajo intenso en cocina profesional.',
+    name: 'Delantal Gastronómico (Bagún de 1,20cm de largo)',
+    description: 'Delantal de tipo gastronómico confeccionado en material Bagún premium con 1,20cm de largo, ofreciendo mayor cobertura. Perfecto para trabajo intenso en cocina profesional.',
     price: 12000,
-    mainImage: '/delantales-bachero/Delantales de tela para panaderia.jpg',
+    mainImage: 'delantales-bachero/Delantales de tela para panaderia.jpg',
     thumbnails: [
-      '/delantales-bachero/Delantales de tela para panaderia.jpg'
+      'delantales-bachero/Delantales de tela para panaderia.jpg'
     ],
     formats: [
       { id: 'blanco', name: 'Blanco', available: true },
@@ -61,11 +61,9 @@ export const products: Product[] = [
     name: 'Delantal de Algodón (0,80cm de largo)',
     description: 'Delantal confeccionado en algodón 100% de alta calidad con 0,80cm de largo. Liviano, confortable y elegante, ideal para uso doméstico o en pequeños emprendimientos gastronómicos.',
     price: 10000,
-    mainImage: '/delantales-tela/Delantales de lino rayado (0,75cm X0,80).jpg',
+    mainImage: 'delantales-bachero/Delantales de tela para panaderia.jpg',
     thumbnails: [
-      '/delantales-tela/Delantal tela lisa.jpg',
-      '/delantales-tela/Delantal en tela de jean.png',
-      '/delantales-tela/verde hombre.jpg'
+      'delantales-bachero/Delantales de tela para panaderia.jpg'
     ],
     formats: [
       { id: 'liso', name: 'Liso', available: true },
@@ -81,10 +79,10 @@ export const products: Product[] = [
     name: 'Delantal para Peluquería (Tafeta, Silver, Traker, Dracon)',
     description: 'Delantal especializado para peluquería confeccionado en variedad de telas: Tafeta, Silver, Traker o Dracon. Material resistente a productos químicos y fácil de limpiar.',
     price: 5000,
-    mainImage: '/delantales-peluqueria/Delantal con bolsillo 3.jpg',
+    mainImage: 'delantales-peluqueria/Delantal con bolsillo 3.jpg',
     thumbnails: [
-      '/delantales-peluqueria/Cartucheras con bolsillos para peluquero (1).png',
-      '/delantales-peluqueria/Delantal con bolsillo 3.jpg'
+      'delantales-peluqueria/Cartucheras con bolsillos para peluquero (1).png',
+      'delantales-peluqueria/Delantal con bolsillo 3.jpg'
     ],
     formats: [
       { id: 'liso', name: 'Liso', available: true },
@@ -98,10 +96,10 @@ export const products: Product[] = [
     name: 'Delantal para Peluquería con Bolsillos (0,80cm de largo)',
     description: 'Delantal profesional para peluquería con múltiples bolsillos para tijeras y accesorios. Confeccionado con 0,80cm de largo, ofrece la protección perfecta para el trabajo diario.',
     price: 7000,
-    mainImage: '/delantales-peluqueria/Cartucheras con bolsillos para peluquero (1).png',
+    mainImage: 'delantales-peluqueria/Cartucheras con bolsillos para peluquero (1).png',
     thumbnails: [
-      '/delantales-peluqueria/Delantal con bolsillo 3.jpg',
-      '/delantales-peluqueria/Cartucheras con bolsillos para peluquero (1).png'
+      'delantales-peluqueria/Delantal con bolsillo 3.jpg',
+      'delantales-peluqueria/Cartucheras con bolsillos para peluquero (1).png'
     ],
     formats: [
       { id: 'liso', name: 'Liso', available: true },
@@ -116,10 +114,10 @@ export const products: Product[] = [
     name: 'Delantal para Veterinaria de Tela con Bolsillo (0,80cm)',
     description: 'Delantal especializado para veterinarios confeccionado en tela resistente, con bolsillo para mayor funcionalidad. Ideal para procedimientos clínicos y trabajo diario con mascotas.',
     price: 11000,
-    mainImage: '/delantales-veterinaria/Delantal de Tela  Veterinaria.jpg',
+    mainImage: 'delantales-veterinaria/Delantal de Tela  Veterinaria.jpg',
     thumbnails: [
-      '/delantales-veterinaria/Delantal de Tela para Veterinaria.jpg',
-      '/delantales-veterinaria/Delantal de Tela  Veterinaria.jpg'
+      'delantales-veterinaria/Delantal de Tela para Veterinaria.jpg',
+      'delantales-veterinaria/Delantal de Tela  Veterinaria.jpg'
     ],
     formats: [
       { id: 'liso', name: 'Liso', available: true },
@@ -133,10 +131,10 @@ export const products: Product[] = [
     name: 'Delantal para Veterinaria Impermeable con bolsillo (0,80cm)',
     description: 'Delantal impermeable para veterinarios con bolsillo y 0,80cm de largo. Material especialmente diseñado para protección completa durante baños de mascotas y procedimientos que involucren líquidos.',
     price: 10000,
-    mainImage: '/delantales-veterinaria/Delantal de Tela para Veterinaria.jpg',
+    mainImage: 'delantales-veterinaria/Delantal de Tela para Veterinaria.jpg',
     thumbnails: [
-      '/delantales-veterinaria/Delantal de Tela  Veterinaria.jpg',
-      '/delantales-veterinaria/Delantal de Tela para Veterinaria.jpg'
+      'delantales-veterinaria/Delantal de Tela  Veterinaria.jpg',
+      'delantales-veterinaria/Delantal de Tela para Veterinaria.jpg'
     ],
     formats: [
       { id: 'liso', name: 'Liso', available: true },
