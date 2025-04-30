@@ -11,16 +11,10 @@ interface CategoryProps {
 
 const categories: CategoryProps[] = [
   {
-    title: 'Delantales Bachero',
+    title: 'Delantales Gastronómico',
     description: 'Resistentes y funcionales para chefs y cocineros profesionales.',
     image: 'https://images.unsplash.com/photo-1581299894007-aaa50297cf16?q=80&w=1974&auto=format&fit=crop',
-    path: '/delantales-bachero'
-  },
-  {
-    title: 'Delantales de Tela',
-    description: 'Elegantes y cómodos para uso diario en el hogar.',
-    image: 'https://images.unsplash.com/photo-1556911073-38141963c9e0?q=80&w=1974&auto=format&fit=crop',
-    path: '/delantales-tela'
+    path: '/delantales-gastronomico'
   },
   {
     title: 'Delantales Peluquería',
@@ -45,7 +39,7 @@ const CategorySection: React.FC = () => {
           Explora nuestra amplia gama de delantales diseñados para diferentes profesiones y necesidades.
         </p>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {categories.map((category, index) => (
             <CategoryCard key={index} {...category} />
           ))}
