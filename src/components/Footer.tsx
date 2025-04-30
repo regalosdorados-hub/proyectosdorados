@@ -31,8 +31,14 @@ const Footer: React.FC = () => {
               <div>
                 <h3 className="font-playfair text-gray-800 font-medium mb-3">Contacto</h3>
                 <p className="text-gray-600 mb-1">Córdoba, Argentina</p>
-                <a href="mailto:info@mandarinadelantales.com" className="text-gray-600 hover:text-mandarina transition-colors break-all">
-                  instagram: @mandarinadelantales
+                <a 
+                  href="https://instagram.com/mandarina.delantales"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-600 hover:text-mandarina transition-colors flex items-center gap-1"
+                >
+                  <Instagram size={16} />
+                  <span className="break-all">@mandarinadelantales</span>
                 </a>
               </div>
             </div>
