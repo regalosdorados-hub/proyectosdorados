@@ -31,7 +31,7 @@ const Navbar: React.FC = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center page-transition">
             <span className="font-petit text-mandarina text-2xl md:text-3xl">Mandarina</span>
-            <span className="font-playfair ml-1 text-xl md:text-2xl">Delantales</span>
+            <span className="font-playfair ml-1 text-xl md:text-2xl">Delantales y algo más...</span>
           </Link>
 
           {/* Desktop Menu */}

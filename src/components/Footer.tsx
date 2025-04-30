@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
             <div className="mb-6 md:mb-0">
               <div className="flex items-center">
                 <span className="font-petit text-mandarina text-2xl">Mandarina</span>
-                <span className="font-playfair ml-1 text-xl">Delantales</span>
+                <span className="font-playfair ml-1 text-xl">Delantales y algo más...</span>
               </div>
               <p className="mt-2 text-gray-600 max-w-sm">
                 Elegancia y funcionalidad en cada detalle. Delantales artesanales de alta calidad para profesionales.
