@@ -37,11 +37,19 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
     product.formats.length > 0 ? product.formats[0].id : null
   );
   
+  // Reset selected image and thumbnails whenever the product changes
   useEffect(() => {
-    if (isOpen && loadedThumbnails.length === 0) {
-      setLoadedThumbnails(product.thumbnails);
-    }
-  }, [isOpen, product.thumbnails, loadedThumbnails.length]);
+    // This ensures we always start with the correct main image
+    setSelectedImage(product.mainImage);
+    // Reset thumbnails to only show this product's thumbnails
+    setLoadedThumbnails(product.thumbnails);
+    // Reset other selections
+    setQuantity(1);
+    setSelectedFormat(product.formats.length > 0 ? product.formats[0].id : null);
+  }, [product.id, product.mainImage, product.thumbnails, product.formats]);
+  
+  // We no longer need this effect as we're handling everything in the effect above
+  // that responds to product.id changes
 
   const getCurrentPrice = () => {
     if (quantity >= 10 && product.priceDiscount2) {
@@ -146,7 +154,7 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
               
               {loadedThumbnails.map((thumb, idx) => (
                 <div 
-                  key={idx}
+                  key={`${product.id}-thumb-${idx}`} // Add product ID to ensure unique keys
                   className={`w-16 h-16 rounded border-2 cursor-pointer overflow-hidden bg-white ${
                     selectedImage === thumb ? 'border-mandarina' : 'border-gray-200'
                   }`}
