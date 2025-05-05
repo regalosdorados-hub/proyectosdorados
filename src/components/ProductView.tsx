@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Share2, Instagram } from 'lucide-react';
+import { AspectRatio } from './ui/aspect-ratio';
 
 interface ProductFormat {
   id: string;
@@ -117,41 +118,47 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
           <div className="space-y-4">
-            <div className="rounded-lg overflow-hidden border border-gray-200">
-              <img 
-                src={selectedImage} 
-                alt={product.name} 
-                className="w-full h-80 object-cover object-center"
-              />
+            <div className="rounded-lg overflow-hidden border border-gray-200 bg-white">
+              <AspectRatio ratio={4/3} className="w-full">
+                <img 
+                  src={selectedImage} 
+                  alt={product.name} 
+                  className="h-full w-full object-contain" 
+                />
+              </AspectRatio>
             </div>
             
             <div className="flex flex-wrap gap-2">
               <div 
-                className={`w-16 h-16 rounded border-2 cursor-pointer overflow-hidden ${
+                className={`w-16 h-16 rounded border-2 cursor-pointer overflow-hidden bg-white ${
                   selectedImage === product.mainImage ? 'border-mandarina' : 'border-gray-200'
                 }`}
                 onClick={() => handleImageClick(product.mainImage)}
               >
-                <img 
-                  src={product.mainImage} 
-                  alt={`${product.name} thumbnail`} 
-                  className="w-full h-full object-cover object-center" 
-                />
+                <div className="w-full h-full flex items-center justify-center">
+                  <img 
+                    src={product.mainImage} 
+                    alt={`${product.name} thumbnail`} 
+                    className="max-h-full max-w-full object-contain" 
+                  />
+                </div>
               </div>
               
               {loadedThumbnails.map((thumb, idx) => (
                 <div 
                   key={idx}
-                  className={`w-16 h-16 rounded border-2 cursor-pointer overflow-hidden ${
+                  className={`w-16 h-16 rounded border-2 cursor-pointer overflow-hidden bg-white ${
                     selectedImage === thumb ? 'border-mandarina' : 'border-gray-200'
                   }`}
                   onClick={() => handleImageClick(thumb)}
                 >
-                  <img 
-                    src={thumb} 
-                    alt={`${product.name} thumbnail ${idx + 1}`} 
-                    className="w-full h-full object-cover object-center" 
-                  />
+                  <div className="w-full h-full flex items-center justify-center">
+                    <img 
+                      src={thumb} 
+                      alt={`${product.name} thumbnail ${idx + 1}`} 
+                      className="max-h-full max-w-full object-contain" 
+                    />
+                  </div>
                 </div>
               ))}
             </div>

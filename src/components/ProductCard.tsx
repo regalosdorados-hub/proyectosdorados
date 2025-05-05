@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { AspectRatio } from './ui/aspect-ratio';
 
 interface ProductFormat {
   id: string;
@@ -33,11 +34,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       onClick={onClick}
     >
       <div className="relative overflow-hidden">
-        <img 
-          src={product.mainImage} 
-          alt={product.name}
-          className="product-image group-hover:scale-105 h-48 w-full object-cover" 
-        />
+        <div className="bg-white">
+          <AspectRatio ratio={4/3} className="w-full">
+            <img 
+              src={product.mainImage} 
+              alt={product.name}
+              className="h-full w-full object-contain group-hover:scale-105 transition-transform duration-300" 
+            />
+          </AspectRatio>
+        </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
           <span className="inline-block bg-white text-mandarina px-2 py-1 rounded-lg text-sm font-medium">
