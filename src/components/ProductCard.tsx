@@ -12,10 +12,13 @@ interface ProductProps {
   name: string;
   description: string;
   price: number;
+  priceDiscount1?: number | null;
+  priceDiscount2?: number | null;
   mainImage: string;
   thumbnails: string[];
   formats: ProductFormat[];
   category: string;
+  refCode?: string;
 }
 
 interface ProductCardProps {
@@ -33,7 +36,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         <img 
           src={product.mainImage} 
           alt={product.name}
-          className="product-image group-hover:scale-105" 
+          className="product-image group-hover:scale-105 h-48 w-full object-cover" 
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
@@ -43,7 +46,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         </div>
       </div>
       <div className="p-4">
-        <h3 className="font-playfair text-lg font-medium text-gray-800 mb-1">{product.name}</h3>
+        <div className="flex justify-between">
+          <h3 className="font-playfair text-lg font-medium text-gray-800 mb-1">{product.name}</h3>
+          {product.refCode && (
+            <span className="text-xs text-mandarina font-medium">Ref: {product.refCode}</span>
+          )}
+        </div>
         <p className="text-gray-500 text-sm mb-2 line-clamp-2" title={product.description}>
           {product.description}
         </p>

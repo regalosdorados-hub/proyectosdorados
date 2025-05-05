@@ -13,10 +13,13 @@ interface ProductProps {
   name: string;
   description: string;
   price: number;
+  priceDiscount1?: number | null; // For 5+ units
+  priceDiscount2?: number | null; // For 10+ units
   mainImage: string;
   thumbnails: string[];
   formats: ProductFormat[];
   category: string;
+  refCode?: string;
 }
 
 interface ProductViewProps {
@@ -32,7 +35,6 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
   const [selectedFormat, setSelectedFormat] = useState<string | null>(
     product.formats.length > 0 ? product.formats[0].id : null
   );
-  const [discount, setDiscount] = useState<number>(0);
   
   useEffect(() => {
     if (isOpen && loadedThumbnails.length === 0) {
@@ -40,22 +42,23 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
     }
   }, [isOpen, product.thumbnails, loadedThumbnails.length]);
 
-  useEffect(() => {
-    if (quantity >= 10) {
-      setDiscount(0.20); // 20% discount for 10+ items (corresponds to Precio Descuento 2)
-    } else if (quantity >= 5) {
-      setDiscount(0.10); // 10% discount for 5+ items (corresponds to Precio Descuento 1)
-    } else {
-      setDiscount(0);
+  const getCurrentPrice = () => {
+    if (quantity >= 10 && product.priceDiscount2) {
+      return product.priceDiscount2;
+    } else if (quantity >= 5 && product.priceDiscount1) {
+      return product.priceDiscount1;
     }
-  }, [quantity]);
-
-  const getDiscountedPrice = () => {
-    return product.price * (1 - discount);
+    return product.price;
   };
 
   const getTotalPrice = () => {
-    return getDiscountedPrice() * quantity;
+    return getCurrentPrice() * quantity;
+  };
+
+  const getDiscountPercentage = () => {
+    const currentPrice = getCurrentPrice();
+    if (currentPrice === product.price) return 0;
+    return Math.round((1 - currentPrice / product.price) * 100);
   };
 
   const handleQuantityChange = (newQuantity: number) => {
@@ -72,14 +75,14 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
 
   const getWhatsAppLink = () => {
     const selectedFormatName = product.formats.find(format => format.id === selectedFormat)?.name || '';
-    const discountedPrice = getDiscountedPrice();
+    const currentPrice = getCurrentPrice();
     const totalPrice = getTotalPrice();
     
     const message = encodeURIComponent(
-      `Hola! Estoy interesado en comprar el producto "${product.name}" con las siguientes características:\n` +
+      `Hola! Estoy interesado en comprar el producto "${product.name}" (Ref: ${product.refCode || ''}) con las siguientes características:\n` +
       `- Cantidad: ${quantity}\n` +
       `- Formato: ${selectedFormatName}\n` +
-      `- Precio unitario: $${discountedPrice.toFixed(2)}\n` +
+      `- Precio unitario: $${currentPrice.toFixed(2)}\n` +
       `- Precio total: $${totalPrice.toFixed(2)}\n\n` +
       `¿Podrían brindarme más información sobre disponibilidad y envío?`
     );
@@ -90,11 +93,14 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
   const getFacebookShareLink = () => {
     const shareUrl = `${window.location.origin}${window.location.pathname}`;
     return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(
-      `¡Mira este increíble delantal "${product.name}" de Mandarina Delantales!\n\n${product.description}\n\nVisita nuestra web para adquirirlo.`
+      `¡Mira este increíble delantal "${product.name}" (Ref: ${product.refCode || ''}) de Mandarina Delantales!\n\n${product.description}\n\nVisita nuestra web para adquirirlo.`
     )}`;
   };
 
   if (!isOpen) return null;
+
+  const discountPercentage = getDiscountPercentage();
+  const currentPrice = getCurrentPrice();
 
   return (
     <div className="product-modal" onClick={onClose}>
@@ -157,6 +163,9 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
                 <div>
                   <p className="text-sm text-gray-500 mb-1">Categoría: {product.category}</p>
                   <h1 className="text-2xl md:text-3xl font-playfair font-medium">{product.name}</h1>
+                  {product.refCode && (
+                    <p className="text-sm text-mandarina mt-1">Ref: {product.refCode}</p>
+                  )}
                 </div>
                 <div className="flex gap-2">
                   <a
@@ -183,8 +192,8 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
               <div className="mt-4 mb-6">
                 <div className="flex flex-col gap-1">
                   <p className="text-xl font-medium text-mandarina">
-                    Precio unitario: ${getDiscountedPrice().toFixed(2)}
-                    {discount > 0 && (
+                    Precio unitario: ${currentPrice.toFixed(2)}
+                    {discountPercentage > 0 && (
                       <span className="text-sm text-gray-500 line-through ml-2">
                         ${product.price.toFixed(2)}
                       </span>
@@ -193,9 +202,9 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
                   <p className="text-lg font-medium text-gray-700">
                     Precio total: ${getTotalPrice().toFixed(2)}
                   </p>
-                  {discount > 0 && (
+                  {discountPercentage > 0 && (
                     <p className="text-sm text-green-600 font-medium">
-                      ¡{(discount * 100).toFixed(0)}% de descuento aplicado!
+                      ¡{discountPercentage}% de descuento aplicado!
                     </p>
                   )}
                 </div>
@@ -205,25 +214,27 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
             <p className="text-gray-600">{product.description}</p>
             
             <div className="space-y-4">
-              <div>
-                <h3 className="font-medium mb-2">Formato</h3>
-                <div className="flex flex-wrap gap-2">
-                  {product.formats.map(format => (
-                    <button
-                      key={format.id}
-                      className={`px-3 py-1.5 rounded-full border ${
-                        selectedFormat === format.id 
-                          ? 'border-mandarina bg-mandarina/10 text-mandarina-dark' 
-                          : 'border-gray-200 text-gray-700 hover:border-gray-300'
-                      } ${!format.available ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      onClick={() => format.available && handleFormatChange(format.id)}
-                      disabled={!format.available}
-                    >
-                      {format.name}
-                    </button>
-                  ))}
+              {product.formats.length > 0 && (
+                <div>
+                  <h3 className="font-medium mb-2">Formato</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {product.formats.map(format => (
+                      <button
+                        key={format.id}
+                        className={`px-3 py-1.5 rounded-full border ${
+                          selectedFormat === format.id 
+                            ? 'border-mandarina bg-mandarina/10 text-mandarina-dark' 
+                            : 'border-gray-200 text-gray-700 hover:border-gray-300'
+                        } ${!format.available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        onClick={() => format.available && handleFormatChange(format.id)}
+                        disabled={!format.available}
+                      >
+                        {format.name}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
               
               <div>
                 <h3 className="font-medium mb-2">Cantidad</h3>
@@ -233,18 +244,22 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
                     isSelected={quantity === 1}
                     onClick={() => handleQuantityChange(1)}
                   />
-                  <QuantityButton
-                    label="5 unidades" 
-                    isSelected={quantity === 5}
-                    onClick={() => handleQuantityChange(5)}
-                    discount="10% OFF"
-                  />
-                  <QuantityButton
-                    label="10 unidades" 
-                    isSelected={quantity === 10}
-                    onClick={() => handleQuantityChange(10)}
-                    discount="20% OFF"
-                  />
+                  {product.priceDiscount1 && (
+                    <QuantityButton
+                      label="5 unidades" 
+                      isSelected={quantity === 5}
+                      onClick={() => handleQuantityChange(5)}
+                      discount={product.priceDiscount1 < product.price ? `${Math.round((1 - product.priceDiscount1/product.price) * 100)}% OFF` : undefined}
+                    />
+                  )}
+                  {product.priceDiscount2 && (
+                    <QuantityButton
+                      label="10 unidades" 
+                      isSelected={quantity === 10}
+                      onClick={() => handleQuantityChange(10)}
+                      discount={product.priceDiscount2 < product.price ? `${Math.round((1 - product.priceDiscount2/product.price) * 100)}% OFF` : undefined}
+                    />
+                  )}
                 </div>
               </div>
               
