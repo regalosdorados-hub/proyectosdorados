@@ -184,7 +184,7 @@ const Cart: React.FC = () => {
                         placeholder="Escribe el mensaje que irá en todos los regalos. Puedes usar {nombre} para personalizar."
                         className="w-full h-32 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-amber-400 transition text-sm"
                       />
-                      <p className="text-[10px] text-slate-400 italic">Ej: "Gracias {nombre} por ser parte de nuestro equipo."</p>
+                      <p className="text-[10px] text-slate-400 italic">Ej: "Gracias {'{nombre}'} por ser parte de nuestro equipo."</p>
                     </div>
                   ) : (
                     <div className="space-y-4">
