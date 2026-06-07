@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import WhatsAppButton from '@/components/WhatsAppButton'
@@ -10,41 +11,46 @@ const Auth: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null)
+  const navigate = useNavigate()
 
   const signIn = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
 
-    const { data, error: signError } = await supabase.auth.signInWithPassword({ email, password })
-    if (signError) {
-      setError(signError.message)
+    try {
+      const { data, error: signError } = await supabase.auth.signInWithPassword({ email, password })
+      if (signError) {
+        setError(signError.message)
+        setLoading(false)
+        return
+      }
+
+      const user = data.user
+      if (!user) {
+        setError('No se encontró usuario')
+        setLoading(false)
+        return
+      }
+
+      const { data: adminData, error: adminError } = await supabase
+        .from('admins')
+        .select('user_id')
+        .eq('user_id', user.id)
+        .single()
+
+      if (adminError || !adminData) {
+        setIsAdmin(false)
+        setError('No tienes permisos de administrador.')
+      } else {
+        setIsAdmin(true)
+        navigate('/admin/products')
+      }
+    } catch (err: any) {
+      setError('Ocurrió un error inesperado.')
+    } finally {
       setLoading(false)
-      return
     }
-
-    const user = data.user
-    if (!user) {
-      setError('No se encontró usuario')
-      setLoading(false)
-      return
-    }
-
-    const { data: adminData, error: adminError } = await supabase
-      .from('admins')
-      .select('user_id')
-      .eq('user_id', user.id)
-      .single()
-
-    if (adminError) {
-      setIsAdmin(false)
-    } else if (adminData) {
-      setIsAdmin(true)
-    } else {
-      setIsAdmin(false)
-    }
-
-    setLoading(false)
   }
 
   return (
@@ -62,12 +68,12 @@ const Auth: React.FC = () => {
             </div>
 
             {isAdmin === true ? (
-              <div className="rounded-3xl border border-amber-300/20 bg-amber-100/70 p-6 text-slate-900">
+              <div className="rounded-3xl border border-amber-300/20 bg-amber-100/70 p-6 text-slate-900 text-center">
                 <h2 className="text-2xl font-semibold mb-3">Bienvenido</h2>
                 <p className="text-slate-700 mb-4">Ya estás autenticado como administrador.</p>
-                <a href="/admin/products" className="inline-flex items-center justify-center rounded-full bg-amber-300 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-400">
-                  Ir a catálogo
-                </a>
+                <Link to="/admin/products" className="inline-flex items-center justify-center rounded-full bg-amber-300 px-8 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-400">
+                  Ir al panel de productos
+                </Link>
               </div>
             ) : (
               <form onSubmit={signIn} className="space-y-5">
@@ -95,12 +101,11 @@ const Auth: React.FC = () => {
                 </div>
 
                 {error && <div className="rounded-3xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
-                {isAdmin === false && <div className="rounded-3xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">No tienes permisos de administrador.</div>}
 
                 <div className="text-right text-sm text-slate-600">
-                  <a href="/auth/recovery" className="font-semibold text-amber-500 hover:text-amber-600">
+                  <Link to="/auth/recovery" className="font-semibold text-amber-500 hover:text-amber-600">
                     ¿Olvidaste tu contraseña?
-                  </a>
+                  </Link>
                 </div>
 
                 <button

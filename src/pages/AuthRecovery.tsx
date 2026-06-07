@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import WhatsAppButton from '@/components/WhatsAppButton'
@@ -28,7 +29,7 @@ const AuthRecovery: React.FC = () => {
 
     setLoading(true)
 
-    const { data, error: updateError } = await supabase.auth.updateUser({ password })
+    const { error: updateError } = await supabase.auth.updateUser({ password })
 
     if (updateError) {
       setError(updateError.message)
@@ -52,7 +53,7 @@ const AuthRecovery: React.FC = () => {
               <p className="text-sm uppercase tracking-[0.35em] text-amber-400">Actualizar contraseña</p>
               <h1 className="mt-4 text-4xl font-semibold text-slate-950">Recuperación de contraseña</h1>
               <p className="mt-3 text-base text-slate-600">
-                Ingresa una nueva contraseña para tu cuenta. Si abriste este enlace desde un correo de recuperación, la sesión debe estar activa.
+                Ingresa una nueva contraseña para tu cuenta.
               </p>
             </div>
 
@@ -93,9 +94,9 @@ const AuthRecovery: React.FC = () => {
             </form>
 
             <div className="mt-6 text-center text-sm text-slate-600">
-              <a href="/auth" className="font-semibold text-amber-500 hover:text-amber-600">
+              <Link to="/auth" className="font-semibold text-amber-500 hover:text-amber-600">
                 Volver al inicio de sesión
-              </a>
+              </Link>
             </div>
           </div>
         </section>
