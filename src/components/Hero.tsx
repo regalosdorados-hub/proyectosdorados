@@ -5,7 +5,7 @@ const features = [
   { title: 'Personalizados', icon: Sparkles },
   { title: 'Descuentos x Cantidad', icon: Percent },
   { title: 'Envíos a todo el país', icon: Truck },
-  { title: 'Atención VIP', icon: Headphones }
+  { title: 'ATENCIÓN AL CLIENTE', icon: Headphones }
 ];
 
 const Hero: React.FC = () => {
