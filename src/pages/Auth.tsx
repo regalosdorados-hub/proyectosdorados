@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
@@ -12,6 +12,25 @@ const Auth: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.user) {
+        const { data: adminData } = await supabase
+          .from('admins')
+          .select('user_id')
+          .eq('user_id', session.user.id)
+          .single()
+        
+        if (adminData) {
+          setIsAdmin(true)
+          navigate('/admin/products')
+        }
+      }
+    }
+    checkUser()
+  }, [navigate])
 
   const signIn = async (e: React.FormEvent) => {
     e.preventDefault()
