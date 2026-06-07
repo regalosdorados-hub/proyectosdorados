@@ -31,25 +31,25 @@ const FeaturedProducts: React.FC = () => {
   });
   
   return (
-    <section id="combos" className="py-12 md:py-16 bg-white">
+    <section id="combos" className="py-8 md:py-10 bg-white">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-playfair font-medium text-slate-900 mb-2">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl md:text-3xl font-playfair font-medium text-slate-900 mb-1">
             Combos destacados
           </h2>
-          <p className="text-slate-500 text-base">
+          <p className="text-slate-500 text-sm">
             Opciones seleccionadas para reconocer y motivar a tu equipo.
           </p>
         </div>
         
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-[350px] rounded-xl bg-slate-50 animate-pulse"></div>
+              <div key={i} className="h-[300px] rounded-xl bg-slate-50 animate-pulse"></div>
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredProducts?.map((product) => (
               <ProductCard 
                 key={product.id}
@@ -61,15 +61,15 @@ const FeaturedProducts: React.FC = () => {
         )}
 
         {/* Company Banner */}
-        <div id="empresas" className="mt-16 rounded-xl bg-[#F5F2EB] p-8 md:p-10">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="flex items-center gap-6">
-              <div className="hidden sm:flex h-16 w-16 items-center justify-center rounded-xl bg-white shadow-sm">
-                <Building2 size={32} className="text-[#B8860B]" />
+        <div id="empresas" className="mt-12 rounded-xl bg-[#F5F2EB] p-6 md:p-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="hidden sm:flex h-12 w-12 items-center justify-center rounded-lg bg-white shadow-sm">
+                <Building2 size={24} className="text-[#B8860B]" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-slate-900 mb-1">¿Eres una empresa?</h3>
-                <p className="text-slate-600">
+                <h3 className="text-lg font-bold text-slate-900 mb-0.5">¿Eres una empresa?</h3>
+                <p className="text-sm text-slate-600">
                   Cotiza tus regalos corporativos y obtiene beneficios exclusivos por volumen.
                 </p>
               </div>
@@ -78,10 +78,10 @@ const FeaturedProducts: React.FC = () => {
               href="https://wa.me/5492901464534"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-md bg-[#B8860B] px-8 py-4 text-sm font-bold text-white transition hover:bg-[#966d09] whitespace-nowrap"
+              className="flex items-center gap-2 rounded-md bg-[#B8860B] px-6 py-3 text-xs font-bold text-white transition hover:bg-[#966d09] whitespace-nowrap"
             >
               Solicitar cotización
-              <ArrowRight size={18} />
+              <ArrowRight size={16} />
             </a>
           </div>
         </div>
