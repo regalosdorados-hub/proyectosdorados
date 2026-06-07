@@ -234,13 +234,13 @@ const ProductForm: React.FC = () => {
           <div className="mb-6">
             <p className="text-sm uppercase tracking-[0.35em] text-amber-500">Administración</p>
             <h2 className="mt-4 text-3xl font-semibold text-slate-950">{id ? 'Editar' : 'Nuevo'} producto</h2>
-            <p className="mt-2 text-slate-600">Define nombre, categoría, variantes por color y precios por cantidad.</p>
+            <p className="mt-2 text-slate-600">Define nombre, categorías (tags), variantes y si es un combo destacado.</p>
           </div>
 
           <form onSubmit={handleSave} className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <label className="block text-sm font-semibold text-slate-700">Nombre</label>
+                <label className="block text-sm font-semibold text-slate-700">Nombre del producto</label>
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -249,10 +249,11 @@ const ProductForm: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700">Categoría</label>
+                <label className="block text-sm font-semibold text-slate-700">Categorías / Tags (Separados por coma)</label>
                 <input
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
+                  placeholder="Ej: Día del Padre, Premium, Gastronomía"
                   className="mt-3 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
                   required
                 />
@@ -270,14 +271,18 @@ const ProductForm: React.FC = () => {
                 />
               </div>
               <div className="flex items-center gap-3 pt-8">
-                <input
-                  type="checkbox"
-                  id="featured"
-                  checked={featured}
-                  onChange={(e) => setFeatured(e.target.checked)}
-                  className="h-5 w-5 rounded border-slate-300 text-amber-500 focus:ring-amber-400"
-                />
-                <label htmlFor="featured" className="text-sm font-semibold text-slate-700">Producto Destacado (Aparece en Home)</label>
+                <div className="flex items-center h-5">
+                  <input
+                    type="checkbox"
+                    id="featured"
+                    checked={featured}
+                    onChange={(e) => setFeatured(e.target.checked)}
+                    className="h-5 w-5 rounded border-slate-300 text-amber-500 focus:ring-amber-400 cursor-pointer"
+                  />
+                </div>
+                <label htmlFor="featured" className="text-sm font-semibold text-slate-700 cursor-pointer">
+                  Marcar como "Combo Destacado" (Aparece en el inicio)
+                </label>
               </div>
             </div>
 

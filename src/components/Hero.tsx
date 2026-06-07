@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Sparkles, Percent, Truck, Headphones } from 'lucide-react';
-import { getFeaturedProducts } from '../data/products';
+import { useFeaturedProducts, DbProduct } from '../hooks/useProducts';
 
 const features = [
   {
@@ -27,7 +26,8 @@ const features = [
 ];
 
 const Hero: React.FC = () => {
-  const previewProducts = getFeaturedProducts().slice(0, 3);
+  const { data: featuredProducts, isLoading } = useFeaturedProducts();
+  const previewProducts = featuredProducts?.slice(0, 3) || [];
 
   return (
     <section id="top" className="relative overflow-hidden bg-[#020205] text-white pt-20 md:pt-24 pb-12">
@@ -51,7 +51,7 @@ const Hero: React.FC = () => {
                 href="#combos"
                 className="inline-flex items-center justify-center rounded-full bg-amber-300 px-7 py-3 text-sm font-semibold text-slate-950 shadow-xl shadow-amber-300/20 transition-all duration-300 hover:bg-amber-200"
               >
-                Ver combos del Día del Padre
+                Ver combos destacados
               </a>
               <a
                 href="https://wa.me/5492901464534?text=Hola!%20Quiero%20cotizar%20regalos%20corporativos%20premium%20para%20mi%20empresa"
@@ -80,49 +80,53 @@ const Hero: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-10">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs uppercase tracking-[0.35em] text-amber-400">Combos destacados</p>
-              <h2 className="mt-3 text-2xl font-semibold text-white">Los primeros productos premium en un solo vistazo.</h2>
+        {!isLoading && previewProducts.length > 0 && (
+          <div className="mt-10">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-sm uppercase tracking-[0.35em] text-amber-400">Combos destacados</p>
+                <h2 className="mt-3 text-2xl font-semibold text-white">Los primeros productos premium en un solo vistazo.</h2>
+              </div>
+              <a
+                href="#combos"
+                className="inline-flex items-center justify-center rounded-full border border-amber-300/30 bg-amber-300/10 px-5 py-2 text-sm font-semibold text-amber-200 transition hover:bg-amber-300 hover:text-slate-950"
+              >
+                Ver todos los combos
+              </a>
             </div>
-            <a
-              href="#combos"
-              className="inline-flex items-center justify-center rounded-full border border-amber-300/30 bg-amber-300/10 px-5 py-2 text-sm font-semibold text-amber-200 transition hover:bg-amber-300 hover:text-slate-950"
-            >
-              Ver todos los combos
-            </a>
-          </div>
 
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
-            {previewProducts.map((product) => (
-              <article key={product.id} className="group overflow-hidden rounded-[1.75rem] border border-white/10 bg-slate-900/80 shadow-2xl shadow-black/30 transition-transform duration-300 hover:-translate-y-1">
-                <div className="overflow-hidden rounded-[1.5rem] bg-slate-800">
-                  <img
-                    src={`/${product.mainImage}`}
-                    alt={product.name}
-                    className="h-44 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-                <div className="p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-base font-semibold text-white">{product.name}</h3>
-                    <span className="whitespace-nowrap rounded-full bg-amber-300/15 px-2 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-amber-200">
-                      {product.refCode}
-                    </span>
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              {previewProducts.map((product) => (
+                <article key={product.id} className="group overflow-hidden rounded-[1.75rem] border border-white/10 bg-slate-900/80 shadow-2xl shadow-black/30 transition-transform duration-300 hover:-translate-y-1">
+                  <div className="overflow-hidden rounded-[1.5rem] bg-slate-800">
+                    <img
+                      src={product.variants?.[0]?.images?.[0] || product.images?.[0] || '/placeholder.svg'}
+                      alt={product.name}
+                      className="h-44 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
                   </div>
-                  <p className="mt-2 text-sm leading-6 text-slate-400 line-clamp-2">{product.description}</p>
-                  <div className="mt-4 flex items-center justify-between gap-3">
-                    <span className="text-sm font-semibold text-white">${product.price.toLocaleString()}</span>
-                    <span className="rounded-full bg-amber-300/10 px-2 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-amber-200">
-                      Desde
-                    </span>
+                  <div className="p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="text-base font-semibold text-white">{product.name}</h3>
+                      {product.ref_code && (
+                        <span className="whitespace-nowrap rounded-full bg-amber-300/15 px-2 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-amber-200">
+                          {product.ref_code}
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-2 text-sm leading-6 text-slate-400 line-clamp-2">{product.description}</p>
+                    <div className="mt-4 flex items-center justify-between gap-3">
+                      <span className="text-sm font-semibold text-white">${(product.prices?.[0]?.price || 0).toLocaleString()}</span>
+                      <span className="rounded-full bg-amber-300/10 px-2 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-amber-200">
+                        Desde
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {features.map((feature) => {
