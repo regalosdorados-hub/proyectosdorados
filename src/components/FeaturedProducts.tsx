@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ProductCard from './ProductCard';
 import ProductView from './ProductView';
 import { useFeaturedProducts, DbProduct } from '../hooks/useProducts';
+import { Building2, ArrowRight } from 'lucide-react';
 
 const FeaturedProducts: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<DbProduct | null>(null);
@@ -20,7 +21,6 @@ const FeaturedProducts: React.FC = () => {
     document.body.style.overflow = 'auto';
   };
 
-  // Adaptador para que el componente ProductCard y ProductView sigan funcionando
   const adaptProduct = (p: DbProduct) => ({
     ...p,
     price: p.prices?.[0]?.price || 0,
@@ -31,19 +31,25 @@ const FeaturedProducts: React.FC = () => {
   });
   
   return (
-    <section id="combos" className="py-20 bg-slate-50">
+    <section id="combos" className="py-24 bg-white">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <p className="text-sm uppercase tracking-[0.35em] text-amber-400">Combos destacados</p>
-          <h2 className="mt-3 text-3xl md:text-4xl font-playfair font-semibold text-slate-950">
-            Opciones seleccionadas para reconocer y motivar a tu equipo.
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-playfair font-medium text-slate-900 mb-4">
+            Combos destacados
           </h2>
+          <p className="text-slate-500 text-lg">
+            Opciones seleccionadas para reconocer y motivar a tu equipo.
+          </p>
         </div>
         
         {isLoading ? (
-          <div className="text-center py-10 text-slate-500">Cargando productos...</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-[400px] rounded-xl bg-slate-50 animate-pulse"></div>
+            ))}
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {featuredProducts?.map((product) => (
               <ProductCard 
                 key={product.id}
@@ -54,24 +60,29 @@ const FeaturedProducts: React.FC = () => {
           </div>
         )}
 
-        <div id="empresas" className="mt-16 rounded-[2rem] border border-slate-200 bg-white p-8 shadow-xl">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-            <div>
-              <p className="text-sm uppercase tracking-[0.35em] text-amber-400">¿Eres una empresa?</p>
-              <h3 className="mt-3 text-2xl md:text-3xl font-semibold text-slate-950">
-                Cotiza tus regalos corporativos y obtené beneficios exclusivos por volumen.
-              </h3>
+        {/* Company Banner */}
+        <div id="empresas" className="mt-20 rounded-xl bg-[#F5F2EB] p-8 md:p-10">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex items-center gap-6">
+              <div className="hidden sm:flex h-16 w-16 items-center justify-center rounded-xl bg-white shadow-sm">
+                <Building2 size={32} className="text-[#B8860B]" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-slate-900 mb-1">¿Eres una empresa?</h3>
+                <p className="text-slate-600">
+                  Cotiza tus regalos corporativos y obtiene beneficios exclusivos por volumen.
+                </p>
+              </div>
             </div>
-            <div>
-              <a
-                href="https://wa.me/5492901464534?text=Hola!%20Necesito%20una%20cotización%20para%20regalos%20corporativos"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-full bg-amber-300 px-8 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-amber-300/20 transition-all duration-300 hover:bg-amber-200"
-              >
-                Solicitar cotización
-              </a>
-            </div>
+            <a
+              href="https://wa.me/5492901464534"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-md bg-[#B8860B] px-8 py-4 text-sm font-bold text-white transition hover:bg-[#966d09] whitespace-nowrap"
+            >
+              Solicitar cotización
+              <ArrowRight size={18} />
+            </a>
           </div>
         </div>
         

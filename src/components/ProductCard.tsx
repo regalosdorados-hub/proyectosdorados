@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AspectRatio } from './ui/aspect-ratio';
 
@@ -13,12 +12,8 @@ interface ProductProps {
   name: string;
   description: string;
   price: number;
-  priceDiscount1?: number | null;
-  priceDiscount2?: number | null;
   mainImage: string;
-  thumbnails: string[];
-  formats: ProductFormat[];
-  category: string;
+  featured?: boolean;
   refCode?: string;
 }
 
@@ -30,11 +25,11 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   return (
     <div 
-      className="group cursor-pointer overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_20px_70px_-40px_rgba(15,23,42,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+      className="group cursor-pointer overflow-hidden rounded-xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:shadow-md"
       onClick={onClick}
     >
       <div className="relative overflow-hidden">
-        <AspectRatio ratio={4/3} className="w-full bg-slate-100">
+        <AspectRatio ratio={4/3} className="w-full bg-slate-50">
           <img 
             src={product.mainImage} 
             alt={product.name}
@@ -42,28 +37,27 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           />
         </AspectRatio>
         {product.featured && (
-          <span className="absolute left-4 top-4 rounded-full bg-amber-300 px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-slate-950 shadow-md">
-            Más vendido
+          <span className="absolute left-3 top-3 rounded bg-[#B8860B] px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+            MÁS VENDIDO
           </span>
         )}
       </div>
-      <div className="p-6">
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <h3 className="font-playfair text-xl font-semibold text-slate-950 mb-2 line-clamp-2">{product.name}</h3>
-            <p className="text-sm text-slate-500 leading-6 line-clamp-3" title={product.description}>
-              {product.description}
-            </p>
+      <div className="p-5">
+        <h3 className="font-playfair text-lg font-bold text-slate-900 mb-2">{product.name}</h3>
+        <p className="text-sm text-slate-500 leading-relaxed mb-6 line-clamp-2">
+          {product.description}
+        </p>
+        
+        <div className="flex items-center justify-between gap-4 pt-4 border-t border-slate-50">
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Desde</span>
+            <span className="text-lg font-bold text-slate-900">${product.price.toLocaleString()} <span className="text-xs font-normal text-slate-500">+ IVA</span></span>
           </div>
-          {product.refCode && (
-            <span className="whitespace-nowrap rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-amber-700">
-              {product.refCode}
-            </span>
-          )}
-        </div>
-        <div className="mt-6 flex items-center justify-between gap-3">
-          <span className="text-lg font-semibold text-slate-950">${product.price.toFixed(2)}</span>
-          <span className="text-sm text-slate-500">{product.category}</span>
+          <button 
+            className="rounded border border-[#B8860B] px-4 py-2 text-xs font-bold text-[#B8860B] transition hover:bg-[#B8860B] hover:text-white"
+          >
+            Ver detalles
+          </button>
         </div>
       </div>
     </div>
