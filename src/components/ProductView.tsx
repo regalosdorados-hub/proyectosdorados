@@ -1,328 +1,260 @@
+import React, { useEffect, useMemo, useState } from 'react'
+import { X, Share2, Instagram } from 'lucide-react'
+import { AspectRatio } from './ui/aspect-ratio'
 
-import React, { useState, useEffect } from 'react';
-import { X, Share2, Instagram } from 'lucide-react';
-import { AspectRatio } from './ui/aspect-ratio';
+type PriceTier = {
+  min_qty: number
+  price: number
+}
 
-interface ProductFormat {
-  id: string;
-  name: string;
-  available: boolean;
+type ProductFormat = {
+  id: string
+  name: string
+  available: boolean
 }
 
 interface ProductProps {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  priceDiscount1?: number | null; // For 5+ units
-  priceDiscount2?: number | null; // For 10+ units
-  mainImage: string;
-  thumbnails: string[];
-  formats: ProductFormat[];
-  category: string;
-  refCode?: string;
+  id: string
+  name: string
+  description: string
+  price: number
+  priceDiscount1?: number | null
+  priceDiscount2?: number | null
+  mainImage: string
+  thumbnails: string[]
+  images?: string[]
+  prices?: PriceTier[]
+  formats: ProductFormat[]
+  category: string
+  refCode?: string
 }
 
 interface ProductViewProps {
-  product: ProductProps;
-  isOpen: boolean;
-  onClose: () => void;
+  product: ProductProps
+  isOpen: boolean
+  onClose: () => void
 }
 
 const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) => {
-  const [selectedImage, setSelectedImage] = useState<string>(product.mainImage);
-  const [loadedThumbnails, setLoadedThumbnails] = useState<string[]>([]);
-  const [quantity, setQuantity] = useState<number>(1);
+  const [selectedImage, setSelectedImage] = useState<string>(product.mainImage)
+  const [gallery, setGallery] = useState<string[]>([])
+  const [quantity, setQuantity] = useState<number>(1)
   const [selectedFormat, setSelectedFormat] = useState<string | null>(
     product.formats.length > 0 ? product.formats[0].id : null
-  );
-  
-  // Reset selected image and thumbnails whenever the product changes
+  )
+
+  const priceTiers = useMemo<PriceTier[]>(() => {
+    if (product.prices?.length) {
+      return [...product.prices]
+        .filter((tier) => tier.min_qty > 0 && tier.price > 0)
+        .sort((a, b) => a.min_qty - b.min_qty)
+    }
+
+    const legacyTiers: PriceTier[] = [{ min_qty: 1, price: product.price }]
+    if (product.priceDiscount1 && product.priceDiscount1 > 0) {
+      legacyTiers.push({ min_qty: 5, price: product.priceDiscount1 })
+    }
+    if (product.priceDiscount2 && product.priceDiscount2 > 0) {
+      legacyTiers.push({ min_qty: 10, price: product.priceDiscount2 })
+    }
+    return legacyTiers
+  }, [product])
+
   useEffect(() => {
-    // This ensures we always start with the correct main image
-    setSelectedImage(product.mainImage);
-    // Reset thumbnails to only show this product's thumbnails
-    setLoadedThumbnails(product.thumbnails);
-    // Reset other selections
-    setQuantity(1);
-    setSelectedFormat(product.formats.length > 0 ? product.formats[0].id : null);
-  }, [product.id, product.mainImage, product.thumbnails, product.formats]);
-  
-  // We no longer need this effect as we're handling everything in the effect above
-  // that responds to product.id changes
+    const images = [product.mainImage, ...(product.images ?? []), ...product.thumbnails]
+      .filter(Boolean)
+      .filter((value, index, self) => self.indexOf(value) === index)
+
+    setGallery(images)
+    setSelectedImage(images[0] ?? product.mainImage)
+    setQuantity(1)
+    setSelectedFormat(product.formats.length > 0 ? product.formats[0].id : null)
+  }, [product])
 
   const getCurrentPrice = () => {
-    if (quantity >= 10 && product.priceDiscount2) {
-      return product.priceDiscount2;
-    } else if (quantity >= 5 && product.priceDiscount1) {
-      return product.priceDiscount1;
-    }
-    return product.price;
-  };
+    const selected = [...priceTiers]
+      .sort((a, b) => a.min_qty - b.min_qty)
+      .filter((tier) => tier.min_qty <= quantity)
+      .pop()
+    return selected?.price ?? product.price
+  }
 
-  const getTotalPrice = () => {
-    return getCurrentPrice() * quantity;
-  };
+  const getTotalPrice = () => getCurrentPrice() * quantity
 
   const getDiscountPercentage = () => {
-    const currentPrice = getCurrentPrice();
-    if (currentPrice === product.price) return 0;
-    return Math.round((1 - currentPrice / product.price) * 100);
-  };
+    const currentPrice = getCurrentPrice()
+    if (currentPrice >= product.price) return 0
+    return Math.round((1 - currentPrice / product.price) * 100)
+  }
 
   const handleQuantityChange = (newQuantity: number) => {
-    setQuantity(newQuantity);
-  };
+    setQuantity(newQuantity)
+  }
 
   const handleImageClick = (image: string) => {
-    setSelectedImage(image);
-  };
+    setSelectedImage(image)
+  }
 
   const handleFormatChange = (formatId: string) => {
-    setSelectedFormat(formatId);
-  };
+    setSelectedFormat(formatId)
+  }
 
   const getWhatsAppLink = () => {
-    const selectedFormatName = product.formats.find(format => format.id === selectedFormat)?.name || '';
-    const currentPrice = getCurrentPrice();
-    const totalPrice = getTotalPrice();
-    
+    const selectedFormatName = product.formats.find((format) => format.id === selectedFormat)?.name || ''
+    const currentPrice = getCurrentPrice()
+    const totalPrice = getTotalPrice()
+
     const message = encodeURIComponent(
-      `Hola! Estoy interesado en comprar el producto "${product.name}" (Ref: ${product.refCode || ''}) con las siguientes características:\n` +
-      `- Cantidad: ${quantity}\n` +
-      `- Formato: ${selectedFormatName}\n` +
-      `- Precio unitario: $${currentPrice.toFixed(2)}\n` +
-      `- Precio total: $${totalPrice.toFixed(2)}\n\n` +
-      `¿Podrían brindarme más información sobre disponibilidad y envío?`
-    );
-    
-    return `https://wa.me/5492901464534?text=${message}`;
-  };
+      `Hola! Estoy interesado en el producto "${product.name}"${product.refCode ? ` (Ref: ${product.refCode})` : ''}.\n` +
+        `Cantidad: ${quantity}\n` +
+        `Formato: ${selectedFormatName}\n` +
+        `Precio unitario: $${currentPrice.toFixed(2)}\n` +
+        `Precio total: $${totalPrice.toFixed(2)}\n\n` +
+        `¿Podrían confirmarme disponibilidad y tiempo de entrega?`
+    )
 
-  const getFacebookShareLink = () => {
-    const shareUrl = `${window.location.origin}${window.location.pathname}`;
-    return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(
-      `¡Mira este increíble delantal "${product.name}" (Ref: ${product.refCode || ''}) de Mandarina Delantales!\n\n${product.description}\n\nVisita nuestra web para adquirirlo.`
-    )}`;
-  };
+    return `https://wa.me/5492901464534?text=${message}`
+  }
 
-  if (!isOpen) return null;
+  const getShareLink = () => {
+    const shareUrl = `${window.location.origin}${window.location.pathname}`
+    return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`
+  }
 
-  const discountPercentage = getDiscountPercentage();
-  const currentPrice = getCurrentPrice();
+  if (!isOpen) return null
+
+  const currentPrice = getCurrentPrice()
+  const totalPrice = getTotalPrice()
+  const discountPercentage = getDiscountPercentage()
 
   return (
     <div className="product-modal" onClick={onClose}>
-      <div 
-        className="product-modal-content fade-in"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button 
-          className="absolute top-4 right-4 p-1 text-gray-500 hover:text-gray-800 transition-colors"
+      <div className="product-modal-content fade-in">
+        <button
+          className="absolute top-4 right-4 rounded-full bg-white/90 p-2 text-slate-700 shadow-md transition hover:bg-white"
           onClick={onClose}
+          aria-label="Cerrar"
         >
           <X size={24} />
         </button>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
-          <div className="space-y-4">
-            <div className="rounded-lg overflow-hidden border border-gray-200 bg-white">
-              <AspectRatio ratio={4/3} className="w-full">
-                <img 
-                  src={selectedImage} 
-                  alt={product.name} 
-                  className="h-full w-full object-contain" 
-                />
+
+        <div className="grid gap-8 md:grid-cols-[1.2fr_0.8fr] p-6 md:p-8">
+          <div className="space-y-6">
+            <div className="rounded-[2rem] border border-slate-200 bg-slate-50 p-4 shadow-sm">
+              <AspectRatio ratio={4 / 3} className="overflow-hidden rounded-[1.75rem] bg-white">
+                <img src={selectedImage} alt={product.name} className="h-full w-full object-cover" />
               </AspectRatio>
             </div>
-            
-            <div className="flex flex-wrap gap-2">
-              <div 
-                className={`w-16 h-16 rounded border-2 cursor-pointer overflow-hidden bg-white ${
-                  selectedImage === product.mainImage ? 'border-mandarina' : 'border-gray-200'
-                }`}
-                onClick={() => handleImageClick(product.mainImage)}
-              >
-                <div className="w-full h-full flex items-center justify-center">
-                  <img 
-                    src={product.mainImage} 
-                    alt={`${product.name} thumbnail`} 
-                    className="max-h-full max-w-full object-contain" 
-                  />
-                </div>
-              </div>
-              
-              {loadedThumbnails.map((thumb, idx) => (
-                <div 
-                  key={`${product.id}-thumb-${idx}`} // Add product ID to ensure unique keys
-                  className={`w-16 h-16 rounded border-2 cursor-pointer overflow-hidden bg-white ${
-                    selectedImage === thumb ? 'border-mandarina' : 'border-gray-200'
-                  }`}
-                  onClick={() => handleImageClick(thumb)}
+
+            <div className="grid gap-3 sm:grid-cols-4">
+              {gallery.map((image) => (
+                <button
+                  key={image}
+                  type="button"
+                  onClick={() => handleImageClick(image)}
+                  className={`overflow-hidden rounded-[1.5rem] border p-0.5 transition ${selectedImage === image ? 'border-amber-500' : 'border-slate-200 hover:border-slate-300'}`}
                 >
-                  <div className="w-full h-full flex items-center justify-center">
-                    <img 
-                      src={thumb} 
-                      alt={`${product.name} thumbnail ${idx + 1}`} 
-                      className="max-h-full max-w-full object-contain" 
-                    />
-                  </div>
-                </div>
+                  <img src={image} alt={`${product.name} miniatura`} className="h-20 w-full object-cover" />
+                </button>
               ))}
             </div>
           </div>
-          
+
           <div className="space-y-6">
-            <div>
-              <div className="flex justify-between items-start">
+            <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Categoría: {product.category}</p>
-                  <h1 className="text-2xl md:text-3xl font-playfair font-medium">{product.name}</h1>
-                  {product.refCode && (
-                    <p className="text-sm text-mandarina mt-1">Ref: {product.refCode}</p>
-                  )}
+                  <p className="text-sm uppercase tracking-[0.35em] text-amber-500">{product.category}</p>
+                  <h2 className="mt-3 text-3xl font-semibold text-slate-950">{product.name}</h2>
+                  {product.refCode && <p className="mt-2 text-sm text-slate-500">Ref: {product.refCode}</p>}
                 </div>
                 <div className="flex gap-2">
-                  <a
-                    href="https://instagram.com/regalosdorados"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 text-gray-600 hover:text-mandarina transition-colors"
-                    title="Síguenos en Instagram"
-                  >
-                    <Instagram size={24} />
+                  <a href="https://instagram.com/regalosdorados" target="_blank" rel="noreferrer" className="rounded-full bg-slate-100 p-3 text-slate-700 transition hover:bg-slate-200">
+                    <Instagram size={20} />
                   </a>
-                  <a
-                    href={getFacebookShareLink()}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
-                    title="Compartir en Facebook"
-                  >
-                    <Share2 size={24} />
-                  </a>
+                  <button onClick={() => window.open(getShareLink(), '_blank')} className="rounded-full bg-slate-100 p-3 text-slate-700 transition hover:bg-slate-200">
+                    <Share2 size={20} />
+                  </button>
                 </div>
               </div>
-              
-              <div className="mt-4 mb-6">
-                <div className="flex flex-col gap-1">
-                  <p className="text-xl font-medium text-mandarina">
-                    Precio unitario: ${currentPrice.toFixed(2)}
-                    {discountPercentage > 0 && (
-                      <span className="text-sm text-gray-500 line-through ml-2">
-                        ${product.price.toFixed(2)}
-                      </span>
-                    )}
-                  </p>
-                  <p className="text-lg font-medium text-gray-700">
-                    Precio total: ${getTotalPrice().toFixed(2)}
-                  </p>
-                  {discountPercentage > 0 && (
-                    <p className="text-sm text-green-600 font-medium">
-                      ¡{discountPercentage}% de descuento aplicado!
-                    </p>
-                  )}
+
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-[1.75rem] bg-slate-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Precio actual</p>
+                  <p className="mt-3 text-3xl font-semibold text-slate-950">${currentPrice.toFixed(2)}</p>
+                </div>
+                <div className="rounded-[1.75rem] bg-slate-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Total</p>
+                  <p className="mt-3 text-3xl font-semibold text-slate-950">${totalPrice.toFixed(2)}</p>
                 </div>
               </div>
-            </div>
-            
-            <p className="text-gray-600">{product.description}</p>
-            
-            <div className="space-y-4">
-              {product.formats.length > 0 && (
-                <div>
-                  <h3 className="font-medium mb-2">Formato</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {product.formats.map(format => (
-                      <button
-                        key={format.id}
-                        className={`px-3 py-1.5 rounded-full border ${
-                          selectedFormat === format.id 
-                            ? 'border-mandarina bg-mandarina/10 text-mandarina-dark' 
-                            : 'border-gray-200 text-gray-700 hover:border-gray-300'
-                        } ${!format.available ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        onClick={() => format.available && handleFormatChange(format.id)}
-                        disabled={!format.available}
-                      >
-                        {format.name}
-                      </button>
-                    ))}
-                  </div>
+
+              {discountPercentage > 0 && (
+                <div className="rounded-[1.75rem] bg-emerald-50 p-4 text-sm font-medium text-emerald-700">
+                  Descuento aplicado: {discountPercentage}% OFF por la cantidad seleccionada.
                 </div>
               )}
-              
-              <div>
-                <h3 className="font-medium mb-2">Cantidad</h3>
-                <div className="flex flex-wrap gap-2">
-                  <QuantityButton
-                    label="1 unidad" 
-                    isSelected={quantity === 1}
-                    onClick={() => handleQuantityChange(1)}
-                  />
-                  {product.priceDiscount1 && (
-                    <QuantityButton
-                      label="5 unidades" 
-                      isSelected={quantity === 5}
-                      onClick={() => handleQuantityChange(5)}
-                      discount={product.priceDiscount1 < product.price ? `${Math.round((1 - product.priceDiscount1/product.price) * 100)}% OFF` : undefined}
-                    />
-                  )}
-                  {product.priceDiscount2 && (
-                    <QuantityButton
-                      label="10 unidades" 
-                      isSelected={quantity === 10}
-                      onClick={() => handleQuantityChange(10)}
-                      discount={product.priceDiscount2 < product.price ? `${Math.round((1 - product.priceDiscount2/product.price) * 100)}% OFF` : undefined}
-                    />
-                  )}
-                </div>
+
+              <p className="mt-6 text-slate-600 leading-7">{product.description}</p>
+            </div>
+
+            <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="mb-5">
+                <h3 className="text-lg font-semibold text-slate-950">Selecciona cantidad</h3>
+                <p className="text-sm text-slate-500">El precio cambia según el rango elegido.</p>
               </div>
-              
-              <div className="pt-4">
-                <a
-                  href={getWhatsAppLink()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full bg-green-600 text-white font-medium py-3 px-4 rounded-lg text-center hover:bg-green-700 transition-colors"
-                >
-                  Consultar por WhatsApp
-                </a>
+              <div className="grid gap-3">
+                {priceTiers.map((tier) => (
+                  <button
+                    key={`${tier.min_qty}-${tier.price}`}
+                    type="button"
+                    onClick={() => handleQuantityChange(tier.min_qty)}
+                    className={`rounded-3xl border px-4 py-3 text-left transition ${quantity === tier.min_qty ? 'border-amber-500 bg-amber-50' : 'border-slate-200 bg-slate-50 hover:border-slate-300'}`}
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-semibold text-slate-950">Desde {tier.min_qty} unidad{tier.min_qty > 1 ? 'es' : ''}</p>
+                        <p className="text-sm text-slate-500">${tier.price.toFixed(2)} c/u</p>
+                      </div>
+                      {quantity === tier.min_qty && <span className="rounded-full bg-amber-500 px-3 py-1 text-xs font-semibold text-white">Seleccionado</span>}
+                    </div>
+                  </button>
+                ))}
               </div>
             </div>
+
+            {product.formats.length > 0 && (
+              <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-slate-950">Formato</h3>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  {product.formats.map((format) => (
+                    <button
+                      key={format.id}
+                      type="button"
+                      onClick={() => format.available && handleFormatChange(format.id)}
+                      className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${selectedFormat === format.id ? 'border-amber-500 bg-amber-50 text-amber-700' : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300'} ${!format.available ? 'cursor-not-allowed opacity-50' : ''}`}
+                      disabled={!format.available}
+                    >
+                      {format.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <a
+              href={getWhatsAppLink()}
+              target="_blank"
+              rel="noreferrer"
+              className="block rounded-[2rem] bg-green-600 px-6 py-4 text-center text-sm font-semibold text-white transition hover:bg-green-700"
+            >
+              Consultar precio y disponibilidad en WhatsApp
+            </a>
           </div>
         </div>
       </div>
     </div>
-  );
-};
-
-interface QuantityButtonProps {
-  label: string;
-  isSelected: boolean;
-  onClick: () => void;
-  discount?: string;
+  )
 }
 
-const QuantityButton: React.FC<QuantityButtonProps> = ({ label, isSelected, onClick, discount }) => {
-  return (
-    <div className="relative">
-      <button
-        className={`px-3 py-1.5 rounded-full border ${
-          isSelected 
-            ? 'border-mandarina bg-mandarina/10 text-mandarina-dark' 
-            : 'border-gray-200 text-gray-700 hover:border-gray-300'
-        }`}
-        onClick={onClick}
-      >
-        {label}
-      </button>
-      {discount && (
-        <span className="absolute -top-2 -right-2 bg-mandarina text-white text-xs px-1.5 py-0.5 rounded-full">
-          {discount}
-        </span>
-      )}
-    </div>
-  );
-};
-
-export default ProductView;
+export default ProductView
