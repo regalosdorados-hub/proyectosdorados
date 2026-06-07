@@ -27,12 +27,8 @@ const Navbar: React.FC = () => {
 
           {/* Navigation Links */}
           <div className="hidden lg:flex items-center gap-8">
-            <a href="#combos" className="text-sm font-medium text-amber-500 border-b-2 border-amber-500 pb-1">Combos</a>
-            <div className="flex items-center gap-1 cursor-pointer group">
-              <span className="text-sm font-medium text-white/90 group-hover:text-amber-500 transition-colors">Categorías</span>
-              <ChevronDown size={14} className="text-white/60 group-hover:text-amber-500" />
-            </div>
-            <a href="#" className="text-sm font-medium text-white/90 hover:text-amber-500 transition-colors">Personalización</a>
+            <a href="#combos" className="text-sm font-medium text-white/90 hover:text-amber-500 transition-colors">Combos</a>
+            <a href="#personalizacion" className="text-sm font-medium text-white/90 hover:text-amber-500 transition-colors">Personalización</a>
             <a href="#como-funciona" className="text-sm font-medium text-white/90 hover:text-amber-500 transition-colors">Cómo funciona</a>
             <a href="#empresas" className="text-sm font-medium text-white/90 hover:text-amber-500 transition-colors">Empresas</a>
           </div>

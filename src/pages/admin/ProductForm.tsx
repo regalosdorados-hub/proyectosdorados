@@ -23,6 +23,7 @@ const ProductForm: React.FC = () => {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('')
+  const [existingCategories, setExistingCategories] = useState<string[]>([])
   const [refCode, setRefCode] = useState('')
   const [featured, setFeatured] = useState(false)
   const [variants, setVariants] = useState<ProductVariant[]>([
@@ -31,6 +32,12 @@ const ProductForm: React.FC = () => {
   const [priceTiers, setPriceTiers] = useState<PriceTier[]>([{ min_qty: 1, price: 0 }])
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      const { data } = await supabase.from('categories').select('name')
+      if (data) setExistingCategories(data.map(c => c.name))
+    }
+    fetchCategories()
+
     if (!id) return
 
     const load = async () => {
@@ -151,6 +158,11 @@ const ProductForm: React.FC = () => {
     setLoading(true)
 
     try {
+      // Guardar categoría si es nueva
+      if (category && !existingCategories.includes(category)) {
+        await supabase.from('categories').insert([{ name: category }])
+      }
+
       const cleanVariants = variants
         .map((variant) => ({
           color: variant.color.trim() || 'Sin color',
@@ -234,7 +246,7 @@ const ProductForm: React.FC = () => {
           <div className="mb-6">
             <p className="text-sm uppercase tracking-[0.35em] text-amber-500">Administración</p>
             <h2 className="mt-4 text-3xl font-semibold text-slate-950">{id ? 'Editar' : 'Nuevo'} producto</h2>
-            <p className="mt-2 text-slate-600">Define nombre, categorías (tags), variantes y si es un combo destacado.</p>
+            <p className="mt-2 text-slate-600">Define nombre, categorías, variantes y si es un combo destacado.</p>
           </div>
 
           <form onSubmit={handleSave} className="space-y-6">
@@ -249,14 +261,22 @@ const ProductForm: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700">Categorías / Tags (Separados por coma)</label>
-                <input
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  placeholder="Ej: Día del Padre, Premium, Gastronomía"
-                  className="mt-3 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
-                  required
-                />
+                <label className="block text-sm font-semibold text-slate-700">Categoría</label>
+                <div className="mt-3 flex gap-2">
+                  <input
+                    list="categories-list"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    placeholder="Elegí o escribí una nueva"
+                    className="w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
+                    required
+                  />
+                  <datalist id="categories-list">
+                    {existingCategories.map(cat => (
+                      <option key={cat} value={cat} />
+                    ))}
+                  </datalist>
+                </div>
               </div>
             </div>
 
