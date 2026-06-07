@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Instagram } from 'lucide-react';
 
@@ -20,17 +19,18 @@ const Footer: React.FC = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <h3 className="font-playfair text-gray-800 font-medium mb-3">Categorías</h3>
+                <h3 className="font-playfair text-white font-medium mb-3">Secciones</h3>
                 <ul className="space-y-2">
-                  <FooterLink to="/delantales-gastronomico">Regalos corporativos</FooterLink>
-                  <FooterLink to="/delantales-peluqueria">Personalización</FooterLink>
-                  <FooterLink to="/delantales-veterinaria">Empresas</FooterLink>
+                  <FooterLink to="#combos">Combos destacados</FooterLink>
+                  <FooterLink to="#categorias">Beneficios</FooterLink>
+                  <FooterLink to="#como-funciona">Cómo funciona</FooterLink>
+                  <FooterLink to="#empresas">Empresas</FooterLink>
                 </ul>
               </div>
               
               <div>
-                <h3 className="font-playfair text-gray-800 font-medium mb-3">Contacto</h3>
-                <p className="text-gray-600 mb-1">Córdoba, Argentina</p>
+                <h3 className="font-playfair text-white font-medium mb-3">Contacto</h3>
+                <p className="text-slate-400 mb-1">Córdoba, Argentina</p>
                 <a 
                   href="https://instagram.com/regalosdorados"
                   target="_blank"
@@ -77,7 +77,7 @@ const FooterLink: React.FC<FooterLinkProps> = ({ to, children }) => {
     <li>
       <a 
         href={to} 
-        className="text-gray-600 hover:text-mandarina transition-colors"
+        className="text-slate-400 hover:text-amber-300 transition-colors"
       >
         {children}
       </a>
