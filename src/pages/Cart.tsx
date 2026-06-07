@@ -1,18 +1,27 @@
-import React, { useState } from 'react';
-import { Trash2, ArrowLeft, Upload, CheckCircle2, MessageSquare, Users, Building, ShoppingCart, Plus } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Trash2, ArrowLeft, Upload, CheckCircle2, MessageSquare, Users, Building, ShoppingCart, Plus, User, Phone, Image as ImageIcon, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabaseClient';
 
 const Cart: React.FC = () => {
   const navigate = useNavigate();
-  const { cart, removeFromCart, totalPrice, totalItems } = useCart();
+  const { cart, removeFromCart, totalPrice, totalItems, clearCart } = useCart();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Order State
+  const [loading, setLoading] = useState(false);
+  const [companyName, setCompanyName] = useState('');
+  const [representativeName, setRepresentativeName] = useState('');
+  const [contactNumber, setContactNumber] = useState('');
   
   // Personalization State
   const [addLogo, setAddLogo] = useState(false);
-  const [companyName, setCompanyName] = useState('');
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<'common' | 'individual'>('common');
   const [commonMessage, setCommonMessage] = useState('');
   const [recipients, setRecipients] = useState<{ name: string; message: string }[]>([]);
@@ -31,21 +40,112 @@ const Cart: React.FC = () => {
     setRecipients(recipients.filter((_, i) => i !== index));
   };
 
-  const handleCheckout = () => {
-    const message = encodeURIComponent(
-      `¡Hola! Quiero confirmar mi pedido de Regalos Dorados.\n\n` +
-      `*Resumen del Pedido:*\n` +
-      cart.map(item => `- ${item.name} (${item.quantity} uds) - ${item.format}`).join('\n') +
-      `\n\n*Total Estimado:* $${totalPrice.toLocaleString()}\n\n` +
-      `*Personalización:*\n` +
-      `- Empresa: ${companyName || 'No especificada'}\n` +
-      `- Logo: ${addLogo ? 'Sí' : 'No'}\n` +
-      `- Mensajes: ${messageType === 'common' ? 'General' : 'Individuales'}\n` +
-      (messageType === 'common' ? `- Mensaje: ${commonMessage}` : `- Destinatarios: ${recipients.length}`)
-    );
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("El logo no debe superar los 2MB");
+        return;
+      }
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-    window.open(`https://wa.me/5492901464534?text=${message}`, '_blank');
-    toast.success('Redirigiendo a WhatsApp para finalizar tu pedido');
+  const removeLogo = () => {
+    setLogoFile(null);
+    setLogoPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleCheckout = async () => {
+    // Validaciones
+    if (!companyName || !representativeName || !contactNumber) {
+      toast.error("Por favor completa los datos de contacto obligatorios");
+      return;
+    }
+
+    if (addLogo && !logoFile) {
+      toast.error("Por favor adjunta el logo de tu empresa");
+      return;
+    }
+
+    setLoading(true);
+    let uploadedLogoUrl = null;
+
+    try {
+      // 1. Subir Logo si existe
+      if (addLogo && logoFile) {
+        const fileExt = logoFile.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const filePath = `order-logos/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('product-images')
+          .upload(filePath, logoFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage
+          .from('product-images')
+          .getPublicUrl(filePath);
+        
+        uploadedLogoUrl = urlData.publicUrl;
+      }
+
+      // 2. Guardar Pedido en DB
+      const orderData = {
+        company_name: companyName,
+        representative_name: representativeName,
+        contact_number: contactNumber,
+        logo_url: uploadedLogoUrl,
+        items: cart,
+        personalization_details: {
+          message_type: messageType,
+          common_message: commonMessage,
+          recipients: recipients
+        },
+        total_price: totalPrice,
+        status: 'pending'
+      };
+
+      const { error: dbError } = await supabase
+        .from('orders')
+        .insert([orderData]);
+
+      if (dbError) throw dbError;
+
+      // 3. Preparar mensaje de WhatsApp
+      const waMessage = encodeURIComponent(
+        `¡Hola! Acabo de registrar un pedido en Regalos Dorados.\n\n` +
+        `*Datos de la Empresa:*\n` +
+        `- Empresa: ${companyName}\n` +
+        `- Representante: ${representativeName}\n` +
+        `- Contacto: ${contactNumber}\n\n` +
+        `*Resumen del Pedido:*\n` +
+        cart.map(item => `- ${item.name} (${item.quantity} uds) - ${item.format}`).join('\n') +
+        `\n\n*Total Estimado:* $${totalPrice.toLocaleString()}\n\n` +
+        `*Personalización:*\n` +
+        `- Logo adjunto: ${addLogo ? 'Sí (enviado al sistema)' : 'No'}\n` +
+        `- Mensajes: ${messageType === 'common' ? 'General' : 'Individuales'}\n` +
+        (messageType === 'common' ? `- Mensaje: ${commonMessage}` : `- Destinatarios: ${recipients.length}`)
+      );
+
+      window.open(`https://wa.me/5492901464534?text=${waMessage}`, '_blank');
+      
+      toast.success('Pedido registrado con éxito. Redirigiendo a WhatsApp...');
+      clearCart();
+      navigate('/');
+    } catch (error: any) {
+      console.error("Error processing order:", error);
+      toast.error("Hubo un error al procesar tu pedido: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (cart.length === 0) {
@@ -86,7 +186,6 @@ const Cart: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column: Items & Personalization */}
             <div className="lg:col-span-2 space-y-8">
               {/* Items List */}
               <div className="bg-white rounded-[2rem] p-6 md:p-8 shadow-sm border border-slate-100">
@@ -121,25 +220,66 @@ const Cart: React.FC = () => {
                 </div>
               </div>
 
+              {/* Contact Info Section */}
+              <div className="bg-white rounded-[2rem] p-6 md:p-8 shadow-sm border border-slate-100 space-y-6">
+                <h2 className="text-lg font-bold flex items-center gap-2">
+                  <Building size={20} className="text-amber-500" />
+                  Datos de la Empresa
+                </h2>
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nombre de la Empresa *</label>
+                    <div className="relative">
+                      <Building className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                      <input 
+                        type="text" 
+                        value={companyName}
+                        onChange={(e) => setCompanyName(e.target.value)}
+                        placeholder="Ej: Tech Solutions S.A."
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 py-3 outline-none focus:border-amber-400 transition"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Representante *</label>
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                      <input 
+                        type="text" 
+                        value={representativeName}
+                        onChange={(e) => setRepresentativeName(e.target.value)}
+                        placeholder="Nombre y Apellido"
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 py-3 outline-none focus:border-amber-400 transition"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">WhatsApp de Contacto *</label>
+                    <div className="relative">
+                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                      <input 
+                        type="tel" 
+                        value={contactNumber}
+                        onChange={(e) => setContactNumber(e.target.value)}
+                        placeholder="Ej: +54 9 351 1234567"
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 py-3 outline-none focus:border-amber-400 transition"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Personalization Section */}
               <div className="bg-white rounded-[2rem] p-6 md:p-8 shadow-sm border border-slate-100 space-y-8">
                 <h2 className="text-lg font-bold flex items-center gap-2">
-                  <Building size={20} className="text-amber-500" />
-                  Personalización Corporativa
+                  <ImageIcon size={20} className="text-amber-500" />
+                  Personalización de Regalos
                 </h2>
 
-                <div className="grid gap-6">
-                  <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Nombre de la Empresa</label>
-                    <input 
-                      type="text" 
-                      value={companyName}
-                      onChange={(e) => setCompanyName(e.target.value)}
-                      placeholder="Ej: Tech Solutions S.A."
-                      className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-amber-400 transition"
-                    />
-                  </div>
-
+                <div className="space-y-6">
                   <div className="flex items-center gap-3 p-4 rounded-2xl bg-amber-50 border border-amber-100">
                     <input 
                       type="checkbox" 
@@ -150,9 +290,45 @@ const Cart: React.FC = () => {
                     />
                     <label htmlFor="addLogo" className="text-sm font-bold text-amber-900 cursor-pointer flex items-center gap-2">
                       <Upload size={16} />
-                      Agregar logo personalizado en los regalos
+                      Incluir logo de mi empresa en los productos
                     </label>
                   </div>
+
+                  {addLogo && (
+                    <div className="space-y-4 animate-fade-in">
+                      <div 
+                        onClick={() => fileInputRef.current?.click()}
+                        className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition ${logoPreview ? 'border-amber-400 bg-amber-50/30' : 'border-slate-200 hover:border-amber-300 hover:bg-slate-50'}`}
+                      >
+                        <input 
+                          type="file" 
+                          ref={fileInputRef}
+                          onChange={handleFileChange}
+                          accept="image/*"
+                          className="hidden"
+                        />
+                        {logoPreview ? (
+                          <div className="relative inline-block">
+                            <img src={logoPreview} alt="Logo Preview" className="h-32 w-auto rounded-lg shadow-md" />
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); removeLogo(); }}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600 transition"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                              <Upload size={20} className="text-slate-400" />
+                            </div>
+                            <p className="text-sm font-bold text-slate-600">Haz clic para subir tu logo</p>
+                            <p className="text-xs text-slate-400">PNG, JPG o SVG (Máx. 2MB)</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="pt-8 border-t border-slate-100">
@@ -266,9 +442,14 @@ const Cart: React.FC = () => {
 
                 <button 
                   onClick={handleCheckout}
-                  className="w-full bg-slate-900 text-white rounded-full py-5 font-bold text-sm shadow-xl hover:bg-slate-800 transition hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+                  disabled={loading}
+                  className="w-full bg-slate-900 text-white rounded-full py-5 font-bold text-sm shadow-xl hover:bg-slate-800 transition hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  Finalizar por WhatsApp
+                  {loading ? (
+                    <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    'Finalizar por WhatsApp'
+                  )}
                 </button>
                 
                 <div className="mt-6 space-y-3">
