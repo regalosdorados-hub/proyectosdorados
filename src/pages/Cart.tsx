@@ -20,7 +20,6 @@ const Cart: React.FC = () => {
   
   // Personalization State
   const [addLogo, setAddLogo] = useState(false);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<'common' | 'individual'>('common');
   const [commonMessage, setCommonMessage] = useState('');
@@ -43,11 +42,10 @@ const Cart: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        toast.error("El logo no debe superar los 2MB");
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("La imagen no debe superar los 5MB");
         return;
       }
-      setLogoFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setLogoPreview(reader.result as string);
@@ -57,7 +55,6 @@ const Cart: React.FC = () => {
   };
 
   const removeLogo = () => {
-    setLogoFile(null);
     setLogoPreview(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -69,45 +66,20 @@ const Cart: React.FC = () => {
       return;
     }
 
-    if (addLogo && !logoFile) {
-      toast.error("Por favor adjunta el logo de tu empresa");
-      return;
-    }
-
     setLoading(true);
-    let uploadedLogoUrl = null;
 
     try {
-      // 1. Subir Logo si existe
-      if (addLogo && logoFile) {
-        const fileExt = logoFile.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-        const filePath = `order-logos/${fileName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('product-images')
-          .upload(filePath, logoFile);
-
-        if (uploadError) throw uploadError;
-
-        const { data: urlData } = supabase.storage
-          .from('product-images')
-          .getPublicUrl(filePath);
-        
-        uploadedLogoUrl = urlData.publicUrl;
-      }
-
-      // 2. Guardar Pedido en DB
+      // 1. Guardar Pedido en DB (sin logo_url)
       const orderData = {
         company_name: companyName,
         representative_name: representativeName,
         contact_number: contactNumber,
-        logo_url: uploadedLogoUrl,
         items: cart,
         personalization_details: {
           message_type: messageType,
           common_message: commonMessage,
-          recipients: recipients
+          recipients: recipients,
+          has_logo: addLogo
         },
         total_price: totalPrice,
         status: 'pending'
@@ -119,7 +91,7 @@ const Cart: React.FC = () => {
 
       if (dbError) throw dbError;
 
-      // 3. Preparar mensaje de WhatsApp
+      // 2. Preparar mensaje de WhatsApp
       const waMessage = encodeURIComponent(
         `¡Hola! Acabo de registrar un pedido en Regalos Dorados.\n\n` +
         `*Datos de la Empresa:*\n` +
@@ -130,14 +102,14 @@ const Cart: React.FC = () => {
         cart.map(item => `- ${item.name} (${item.quantity} uds) - ${item.format}`).join('\n') +
         `\n\n*Total Estimado:* $${totalPrice.toLocaleString()}\n\n` +
         `*Personalización:*\n` +
-        `- Logo adjunto: ${addLogo ? 'Sí (enviado al sistema)' : 'No'}\n` +
+        (addLogo ? `⚠️ *ADJUNTARÉ EL LOGO A CONTINUACIÓN EN ESTE CHAT*\n` : `- Sin logo personalizado\n`) +
         `- Mensajes: ${messageType === 'common' ? 'General' : 'Individuales'}\n` +
         (messageType === 'common' ? `- Mensaje: ${commonMessage}` : `- Destinatarios: ${recipients.length}`)
       );
 
       window.open(`https://wa.me/5493516420000?text=${waMessage}`, '_blank');
       
-      toast.success('Pedido registrado con éxito. Redirigiendo a WhatsApp...');
+      toast.success('Pedido registrado. ¡No olvides adjuntar tu logo en el chat de WhatsApp!');
       clearCart();
       navigate('/');
     } catch (error: any) {
@@ -322,8 +294,8 @@ const Cart: React.FC = () => {
                             <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-2">
                               <Upload size={20} className="text-slate-400" />
                             </div>
-                            <p className="text-sm font-bold text-slate-600">Haz clic para subir tu logo</p>
-                            <p className="text-xs text-slate-400">PNG, JPG o SVG (Máx. 2MB)</p>
+                            <p className="text-sm font-bold text-slate-600">Haz clic para seleccionar tu logo</p>
+                            <p className="text-xs text-slate-400">Solo para vista previa. Deberás adjuntarlo en WhatsApp.</p>
                           </div>
                         )}
                       </div>
