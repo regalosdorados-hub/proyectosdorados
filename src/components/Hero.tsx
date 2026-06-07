@@ -10,24 +10,24 @@ const features = [
 
 const Hero: React.FC = () => {
   return (
-    <section className="relative bg-[#0A0A0A] pt-20 pb-0 overflow-hidden min-h-[85vh] flex flex-col">
+    <section className="relative bg-[#0A0A0A] pt-24 pb-0 overflow-hidden min-h-[70vh] flex flex-col">
       <div className="container mx-auto px-4 flex-grow flex items-center">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center w-full">
           {/* Left Content */}
-          <div className="z-10 py-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Tag size={14} className="text-[#B8860B]" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#B8860B]">Promoción Especial</span>
+          <div className="z-10 py-2">
+            <div className="flex items-center gap-2 mb-2">
+              <Tag size={12} className="text-[#B8860B]" />
+              <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#B8860B]">Promoción Especial</span>
             </div>
             
-            <h1 className="font-playfair text-4xl md:text-6xl font-medium leading-tight text-white mb-1">
+            <h1 className="font-playfair text-4xl md:text-5xl lg:text-6xl font-medium leading-tight text-white mb-1">
               Día del Padre
             </h1>
-            <h2 className="font-playfair text-3xl md:text-5xl font-medium text-[#B8860B] mb-4">
+            <h2 className="font-playfair text-2xl md:text-4xl font-medium text-[#B8860B] mb-3">
               Celebra a quienes siempre están.
             </h2>
             
-            <p className="text-sm md:text-base text-white/70 max-w-md mb-6 leading-relaxed">
+            <p className="text-sm text-white/70 max-w-md mb-5 leading-relaxed">
               Sorprende a tus colaboradores con un regalo significativo que reconoce su esfuerzo y dedicación.
             </p>
             
@@ -43,7 +43,7 @@ const Hero: React.FC = () => {
           </div>
 
           {/* Right Image */}
-          <div className="relative h-[250px] lg:h-[400px] w-full">
+          <div className="relative h-[200px] lg:h-[350px] w-full">
             <img
               src="/Hero_RegalosDorados.png"
               alt="Caja de regalo premium"
@@ -54,14 +54,14 @@ const Hero: React.FC = () => {
       </div>
 
       {/* Compact Features Bar - Fixed at bottom of Hero */}
-      <div className="bg-black/50 backdrop-blur-sm border-t border-white/10 py-4">
+      <div className="bg-black/50 backdrop-blur-sm border-t border-white/10 py-3">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {features.map((feature) => {
               const Icon = feature.icon;
               return (
                 <div key={feature.title} className="flex items-center gap-3">
-                  <Icon size={16} className="text-[#B8860B] shrink-0" />
+                  <Icon size={14} className="text-[#B8860B] shrink-0" />
                   <span className="text-[9px] md:text-[10px] font-bold text-white/80 uppercase tracking-wider">{feature.title}</span>
                 </div>
               );

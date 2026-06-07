@@ -31,13 +31,13 @@ const FeaturedProducts: React.FC = () => {
   });
   
   return (
-    <section id="combos" className="py-24 bg-white">
+    <section id="combos" className="py-12 md:py-16 bg-white">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-playfair font-medium text-slate-900 mb-4">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl md:text-4xl font-playfair font-medium text-slate-900 mb-2">
             Combos destacados
           </h2>
-          <p className="text-slate-500 text-lg">
+          <p className="text-slate-500 text-base">
             Opciones seleccionadas para reconocer y motivar a tu equipo.
           </p>
         </div>
@@ -45,7 +45,7 @@ const FeaturedProducts: React.FC = () => {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-[400px] rounded-xl bg-slate-50 animate-pulse"></div>
+              <div key={i} className="h-[350px] rounded-xl bg-slate-50 animate-pulse"></div>
             ))}
           </div>
         ) : (
@@ -61,7 +61,7 @@ const FeaturedProducts: React.FC = () => {
         )}
 
         {/* Company Banner */}
-        <div id="empresas" className="mt-20 rounded-xl bg-[#F5F2EB] p-8 md:p-10">
+        <div id="empresas" className="mt-16 rounded-xl bg-[#F5F2EB] p-8 md:p-10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="flex items-center gap-6">
               <div className="hidden sm:flex h-16 w-16 items-center justify-center rounded-xl bg-white shadow-sm">
