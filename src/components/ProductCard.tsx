@@ -30,39 +30,40 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   return (
     <div 
-      className="product-card cursor-pointer group"
+      className="group cursor-pointer overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_20px_70px_-40px_rgba(15,23,42,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
       onClick={onClick}
     >
       <div className="relative overflow-hidden">
-        <div className="bg-white">
-          <AspectRatio ratio={4/3} className="w-full">
-            <img 
-              src={product.mainImage} 
-              alt={product.name}
-              className="h-full w-full object-contain group-hover:scale-105 transition-transform duration-300" 
-            />
-          </AspectRatio>
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-          <span className="inline-block bg-white text-mandarina px-2 py-1 rounded-lg text-sm font-medium">
-            Ver detalle
+        <AspectRatio ratio={4/3} className="w-full bg-slate-100">
+          <img 
+            src={product.mainImage} 
+            alt={product.name}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" 
+          />
+        </AspectRatio>
+        {product.featured && (
+          <span className="absolute left-4 top-4 rounded-full bg-amber-300 px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-slate-950 shadow-md">
+            Más vendido
           </span>
-        </div>
+        )}
       </div>
-      <div className="p-4">
-        <div className="flex justify-between">
-          <h3 className="font-playfair text-lg font-medium text-gray-800 mb-1">{product.name}</h3>
+      <div className="p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <h3 className="font-playfair text-xl font-semibold text-slate-950 mb-2 line-clamp-2">{product.name}</h3>
+            <p className="text-sm text-slate-500 leading-6 line-clamp-3" title={product.description}>
+              {product.description}
+            </p>
+          </div>
           {product.refCode && (
-            <span className="text-xs text-mandarina font-medium">Ref: {product.refCode}</span>
+            <span className="whitespace-nowrap rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-amber-700">
+              {product.refCode}
+            </span>
           )}
         </div>
-        <p className="text-gray-500 text-sm mb-2 line-clamp-2" title={product.description}>
-          {product.description}
-        </p>
-        <div className="flex justify-between items-center">
-          <span className="text-mandarina font-medium">${product.price.toFixed(2)}</span>
-          <span className="text-xs text-gray-500">{product.category}</span>
+        <div className="mt-6 flex items-center justify-between gap-3">
+          <span className="text-lg font-semibold text-slate-950">${product.price.toFixed(2)}</span>
+          <span className="text-sm text-slate-500">{product.category}</span>
         </div>
       </div>
     </div>

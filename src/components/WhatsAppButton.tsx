@@ -6,7 +6,7 @@ interface WhatsAppButtonProps {
   message?: string;
 }
 
-const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({ message = "Hola! Me comunico desde su sitio web" }) => {
+const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({ message = "Hola! Quiero cotizar regalos corporativos premium para mi empresa" }) => {
   const encodedMessage = encodeURIComponent(message);
   const whatsappUrl = `https://wa.me/5492901464534?text=${encodedMessage}`;
   

@@ -4,17 +4,17 @@ import { Instagram } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-gray-50 pt-12 pb-8">
+    <footer className="bg-[#070707] pt-16 pb-10 text-slate-300">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between">
+          <div className="flex flex-col md:flex-row justify-between gap-10">
             <div className="mb-6 md:mb-0">
-              <div className="flex items-center">
-                <span className="font-petit text-mandarina text-2xl">Mandarina</span>
-                <span className="font-playfair ml-1 text-xl">Delantales y algo más...</span>
+              <div className="flex items-center gap-3">
+                <span className="font-petit text-3xl text-amber-300">Regalos Dorados</span>
+                <span className="font-playfair text-lg text-slate-200">Regalos corporativos premium</span>
               </div>
-              <p className="mt-2 text-gray-600 max-w-sm">
-                Elegancia y funcionalidad en cada detalle. Delantales artesanales de alta calidad para profesionales.
+              <p className="mt-4 text-slate-400 max-w-sm">
+                Solución integral para elegir, personalizar y enviar regalos que reconocen el talento y fortalecen tu marca empleadora.
               </p>
             </div>
             
@@ -22,9 +22,9 @@ const Footer: React.FC = () => {
               <div>
                 <h3 className="font-playfair text-gray-800 font-medium mb-3">Categorías</h3>
                 <ul className="space-y-2">
-                  <FooterLink to="/delantales-gastronomico">Delantales Gastronómico</FooterLink>
-                  <FooterLink to="/delantales-peluqueria">Delantales Peluquería</FooterLink>
-                  <FooterLink to="/delantales-veterinaria">Delantales Veterinaria</FooterLink>
+                  <FooterLink to="/delantales-gastronomico">Regalos corporativos</FooterLink>
+                  <FooterLink to="/delantales-peluqueria">Personalización</FooterLink>
+                  <FooterLink to="/delantales-veterinaria">Empresas</FooterLink>
                 </ul>
               </div>
               
@@ -32,29 +32,29 @@ const Footer: React.FC = () => {
                 <h3 className="font-playfair text-gray-800 font-medium mb-3">Contacto</h3>
                 <p className="text-gray-600 mb-1">Córdoba, Argentina</p>
                 <a 
-                  href="https://instagram.com/mandarina.delantales"
+                  href="https://instagram.com/regalosdorados"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-600 hover:text-mandarina transition-colors flex items-center gap-1"
+                  className="text-slate-400 hover:text-amber-300 transition-colors flex items-center gap-1"
                 >
                   <Instagram size={16} />
-                  <span className="break-all">@mandarinadelantales</span>
+                  <span className="break-all">@regalosdorados</span>
                 </a>
               </div>
             </div>
           </div>
           
-          <div className="border-t border-gray-200 mt-10 pt-6">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <p className="text-gray-600 text-sm">
-                © Mandarina Delantales 2025
+          <div className="border-t border-slate-800 mt-10 pt-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-3">
+              <p className="text-slate-500 text-sm">
+                © Regalos Dorados 2026
               </p>
-              <p className="text-gray-600 text-sm mt-2 md:mt-0">
+              <p className="text-slate-500 text-sm">
                 Desarrollado por <a 
                   href="https://naiam.studio" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="text-mandarina hover:underline"
+                  className="text-amber-300 hover:underline"
                 >
                   Naiam Studio
                 </a>

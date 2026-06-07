@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { ShoppingCart, MessageCircle } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -23,28 +23,44 @@ const Navbar: React.FC = () => {
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-        isScrolled ? 'navbar-blur shadow-sm py-3' : 'bg-transparent py-5'
+        isScrolled ? 'bg-black/95 shadow-2xl py-3 backdrop-blur-xl' : 'bg-transparent py-5'
       }`}
     >
       <div className="container mx-auto px-4">
-        <nav className="flex justify-between items-center">
-          {/* Logo */}
-          <Link to="/" className="flex items-center page-transition">
-            <span className="font-petit text-mandarina text-2xl md:text-3xl">Mandarina</span>
-            <span className="font-playfair ml-1 text-xl md:text-2xl">Delantales y algo más...</span>
-          </Link>
+        <nav className="flex flex-wrap items-center justify-between gap-4 py-4">
+          <a href="#top" className="page-transition inline-flex items-center">
+            <img src="/RegalosDoradosLogotype.png" alt="Regalos Dorados" className="h-24 w-auto max-h-[56px]" />
+          </a>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-6">
-            <NavLink to="/">Inicio</NavLink>
-            <NavLink to="/delantales-gastronomico">Gastronómico</NavLink>
-            <NavLink to="/delantales-peluqueria">Peluquería</NavLink>
-            <NavLink to="/delantales-veterinaria">Veterinaria</NavLink>
+          <div className="hidden xl:flex flex-1 justify-center items-center gap-8 text-[0.95rem] text-slate-100">
+            <NavLink href="#combos">Combos</NavLink>
+            <NavLink href="#categorias">Categorías</NavLink>
+            <NavLink href="#como-funciona">Cómo funciona</NavLink>
+            <NavLink href="#empresas">Empresas</NavLink>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <a
+              href="/cart"
+              className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 p-2 text-slate-100 transition hover:border-amber-300 hover:text-amber-300"
+              aria-label="Carrito"
+            >
+              <ShoppingCart size={16} />
+            </a>
+            <a
+              href="https://wa.me/5492901464534?text=Hola!%20Quiero%20escribir%20por%20Whatsapp"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-100 transition hover:border-amber-300 hover:text-amber-300"
+            >
+              <MessageCircle size={14} />
+              Whatsapp
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
           <button 
-            className="md:hidden text-gray-800 hover:text-mandarina focus:outline-none"
+            className="md:hidden text-white hover:text-mandarina focus:outline-none"
             onClick={toggleMobileMenu}
           >
             <svg 
@@ -64,12 +80,13 @@ const Navbar: React.FC = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-white py-4 mt-3 rounded-lg shadow-lg fade-in">
+          <div className="md:hidden bg-slate-900 py-4 mt-3 rounded-3xl shadow-2xl fade-in border border-white/10">
             <div className="flex flex-col items-center space-y-4">
-              <MobileNavLink to="/" onClick={toggleMobileMenu}>Inicio</MobileNavLink>
-              <MobileNavLink to="/delantales-gastronomico" onClick={toggleMobileMenu}>Gastronómico</MobileNavLink>
-              <MobileNavLink to="/delantales-peluqueria" onClick={toggleMobileMenu}>Peluquería</MobileNavLink>
-              <MobileNavLink to="/delantales-veterinaria" onClick={toggleMobileMenu}>Veterinaria</MobileNavLink>
+              <MobileNavLink href="#top" onClick={toggleMobileMenu}>Inicio</MobileNavLink>
+              <MobileNavLink href="#combos" onClick={toggleMobileMenu}>Combos</MobileNavLink>
+              <MobileNavLink href="#categorias" onClick={toggleMobileMenu}>Categorías</MobileNavLink>
+              <MobileNavLink href="#como-funciona" onClick={toggleMobileMenu}>Cómo funciona</MobileNavLink>
+              <MobileNavLink href="#empresas" onClick={toggleMobileMenu}>Empresas</MobileNavLink>
             </div>
           </div>
         )}
@@ -79,18 +96,18 @@ const Navbar: React.FC = () => {
 };
 
 type NavLinkProps = {
-  to: string;
+  href: string;
   children: React.ReactNode;
 }
 
-const NavLink: React.FC<NavLinkProps> = ({ to, children }) => {
+const NavLink: React.FC<NavLinkProps> = ({ href, children }) => {
   return (
-    <Link 
-      to={to} 
-      className="text-gray-800 font-medium hover:text-mandarina page-transition"
+    <a 
+      href={href} 
+      className="text-white font-medium hover:text-mandarina page-transition"
     >
       {children}
-    </Link>
+    </a>
   );
 };
 
@@ -98,15 +115,15 @@ type MobileNavLinkProps = NavLinkProps & {
   onClick: () => void;
 }
 
-const MobileNavLink: React.FC<MobileNavLinkProps> = ({ to, children, onClick }) => {
+const MobileNavLink: React.FC<MobileNavLinkProps> = ({ href, children, onClick }) => {
   return (
-    <Link 
-      to={to} 
-      className="text-gray-800 font-medium hover:text-mandarina py-2 w-full text-center page-transition"
+    <a 
+      href={href} 
+      className="text-white font-medium hover:text-mandarina py-2 w-full text-center page-transition"
       onClick={onClick}
     >
       {children}
-    </Link>
+    </a>
   );
 };
 

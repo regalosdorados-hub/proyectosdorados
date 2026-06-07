@@ -9,7 +9,7 @@ import {
 
 const FAQ: React.FC = () => {
   return (
-    <section className="py-16 bg-gray-50">
+    <section id="como-funciona" className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl font-playfair text-center mb-10">Preguntas Frecuentes</h2>
@@ -30,16 +30,16 @@ const FAQ: React.FC = () => {
             </AccordionItem>
 
             <AccordionItem value="item-3">
-              <AccordionTrigger className="text-left">¿Qué materiales utilizan en sus delantales?</AccordionTrigger>
+              <AccordionTrigger className="text-left">¿Qué materiales utilizan en sus regalos corporativos?</AccordionTrigger>
               <AccordionContent>
-                Utilizamos telas de alta calidad, seleccionadas específicamente para cada tipo de uso. Todos nuestros materiales son resistentes y duraderos.
+                Trabajamos con proveedores premium que garantizan calidad, presentaciones sofisticadas y productos listos para personalizar.
               </AccordionContent>
             </AccordionItem>
 
             <AccordionItem value="item-4">
-              <AccordionTrigger className="text-left">¿Hacen delantales personalizados?</AccordionTrigger>
+              <AccordionTrigger className="text-left">¿Hacen regalos corporativos personalizados?</AccordionTrigger>
               <AccordionContent>
-                Sí, ofrecemos servicios de personalización. Puedes elegir colores, agregar bordados o logos. Contáctanos para más detalles.
+                Sí, ofrecemos personalización con nombres, logos y tarjetas de agradecimiento. Consultá por opciones de branding a escala.
               </AccordionContent>
             </AccordionItem>
 

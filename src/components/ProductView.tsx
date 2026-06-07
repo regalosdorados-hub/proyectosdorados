@@ -184,7 +184,7 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
                 </div>
                 <div className="flex gap-2">
                   <a
-                    href="https://instagram.com/mandarina.delantales"
+                    href="https://instagram.com/regalosdorados"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="p-2 text-gray-600 hover:text-mandarina transition-colors"

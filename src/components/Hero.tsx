@@ -1,77 +1,99 @@
 
 import React from 'react';
-import { Link as ScrollLink } from 'react-scroll';
+import { Sparkles, Percent, Truck, Headphones } from 'lucide-react';
+
+const features = [
+  {
+    title: 'Regalos personalizados',
+    description: 'Con tu logo y tarjeta dedicada',
+    icon: Sparkles,
+  },
+  {
+    title: 'Descuentos por cantidad',
+    description: 'Mejores precios para tu empresa',
+    icon: Percent,
+  },
+  {
+    title: 'Envíos a todo el país',
+    description: 'Entregas puntuales y seguras',
+    icon: Truck,
+  },
+  {
+    title: 'Atención personalizada',
+    description: 'Te asesoramos en todo el proceso',
+    icon: Headphones,
+  }
+];
 
 const Hero: React.FC = () => {
   return (
-    <section className="relative bg-white pt-24 md:pt-32 pb-16 overflow-hidden">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div className="order-2 md:order-1">
-            <h1 className="font-playfair text-4xl md:text-5xl lg:text-6xl font-semibold text-gray-800 leading-tight">
-              Elegancia y<br />
-              <span className="text-mandarina">función</span> en<br />
-              cada detalle.
+    <section id="top" className="relative overflow-hidden bg-[#020205] text-white pt-24 md:pt-32 pb-20">
+      <div className="absolute inset-0 bg-black/90"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(245,158,11,0.18),_transparent_14%),radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.05),_transparent_22%)]"></div>
+      <div className="relative container mx-auto px-4">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(420px,0.8fr)] gap-12 items-center">
+          <div className="max-w-xl">
+            <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-amber-300/10 px-5 py-2 text-xs uppercase tracking-[0.35em] text-amber-200 font-semibold">
+              Promoción especial
+            </span>
+            <h1 className="mt-8 text-5xl md:text-6xl font-semibold tracking-tight leading-tight text-white">
+              Día del Padre
+              <span className="block text-amber-300">Celebra a quienes siempre están.</span>
             </h1>
-            
-            <p className="mt-6 text-lg text-gray-600 max-w-md">
-              Descubre nuestra colección de delantales artesanales diseñados 
-              para profesionales que valoran la calidad y la estética.
+            <p className="mt-6 text-lg text-slate-300 max-w-xl leading-8">
+              Sorprende a tus colaboradores con un regalo significativo que reconoce su esfuerzo y dedicación.
             </p>
-            
-            <div className="mt-10 space-x-4">
-              <ScrollLink 
-                to="categories-section"
-                smooth={true}
-                duration={800}
-                offset={-100}
-                className="px-6 py-3 bg-mandarina text-white rounded-lg font-medium hover:bg-mandarina-dark transition-colors duration-300 cursor-pointer"
-              >
-                Ver categorías
-              </ScrollLink>
+            <div className="mt-10 flex flex-wrap items-center gap-4">
               <a
-                href="https://wa.me/5492901464534?text=Hola!%20Me%20interesa%20conocer%20más%20sobre%20sus%20delantales"
-                target="_blank"
-                rel="noopener noreferrer" 
-                className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-300"
+                href="#combos"
+                className="inline-flex items-center justify-center rounded-full bg-amber-300 px-7 py-3 text-sm font-semibold text-slate-950 shadow-xl shadow-amber-300/20 transition-all duration-300 hover:bg-amber-200"
               >
-                Contactar
+                Ver combos del Día del Padre
+              </a>
+              <a
+                href="https://wa.me/5492901464534?text=Hola!%20Quiero%20cotizar%20regalos%20corporativos%20premium%20para%20mi%20empresa"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-full border border-slate-700 bg-slate-900/80 px-7 py-3 text-sm font-semibold text-white transition-all duration-300 hover:border-amber-300 hover:text-amber-300"
+              >
+                Descuentos por cantidad
               </a>
             </div>
           </div>
-          
-          <div className="order-1 md:order-2 relative">
-            <div className="relative z-10 animate-float">
-              <img 
-                src="portada.png" 
-                alt="Delantal Premium Mandarina - Elegancia y calidad en cada detalle" 
-                className="w-full h-auto rounded-lg shadow-xl"
+
+          <div className="relative">
+            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-slate-950/80 shadow-2xl shadow-black/60">
+              <img
+                src="/Hero_RegalosDorados.png"
+                alt="Caja corporativa de regalos premium"
+                className="w-full h-full object-cover"
               />
-              
-              <div className="absolute -bottom-8 -left-8 w-24 h-24 md:w-32 md:h-32 bg-mandarina/10 rounded-full"></div>
-              <div className="absolute -top-8 -right-8 w-16 h-16 md:w-24 md:h-24 bg-mandarina/20 rounded-full"></div>
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent"></div>
             </div>
-            
-            {/* Sketch illustrations */}
-            <div className="absolute top-1/2 right-0 transform translate-x-1/2 -translate-y-1/2 w-20 h-20 md:w-32 md:h-32 opacity-30 pencil-sketch">
-              <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                <path fill="none" stroke="currentColor" strokeWidth="2"
-                  d="M39.2,-65.8C50,-60,57.9,-47.8,65.9,-34.9C73.9,-22,82.1,-8.5,82.3,5.4C82.5,19.3,74.8,33.5,65.1,45.8C55.4,58.1,43.8,68.4,30.3,73.4C16.9,78.4,1.5,78.2,-14.2,76.4C-29.9,74.6,-46,71.2,-56.8,61.6C-67.6,52.1,-73.2,36.5,-77.7,20.7C-82.2,4.8,-85.7,-11.2,-81.7,-25.2C-77.6,-39.1,-66.1,-51.1,-52.9,-56C-39.6,-60.9,-24.7,-58.8,-10.4,-57.6C3.9,-56.3,28.3,-71.7,39.2,-65.8Z">
-                </path>
-              </svg>
-            </div>
-            <div className="absolute bottom-1/3 -left-12 w-24 h-24 md:w-36 md:h-36 opacity-20 pencil-sketch">
-              <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                <path fill="none" stroke="currentColor" strokeWidth="2"
-                  d="M42.1,-72.5C53.9,-67,62.7,-54.2,69.9,-40.8C77.1,-27.5,82.7,-13.7,83.3,0.3C83.8,14.4,79.2,28.8,71.2,40.5C63.2,52.3,51.8,61.4,39.1,69.9C26.5,78.3,13.2,86.1,-0.5,86.9C-14.2,87.8,-28.4,81.7,-40.7,73C-53,64.3,-63.3,52.9,-71.3,39.8C-79.3,26.8,-85,13.4,-86,0.8C-86,-11.8,-80.8,-23.6,-73.6,-34C-66.5,-44.3,-57.3,-53.2,-46,-59.4C-34.7,-65.6,-21.3,-68.9,-7.2,-67.9C6.9,-66.9,30.3,-78,42.1,-72.5Z">
-                </path>
-              </svg>
+            <div className="absolute -bottom-8 left-4 right-4 rounded-[1.75rem] border border-white/10 bg-slate-900/90 p-6 shadow-2xl shadow-black/50 backdrop-blur-xl">
+              <p className="text-xs uppercase tracking-[0.4em] text-slate-400">Tu logo, tarjeta y mensaje incluidos</p>
+              <p className="mt-3 text-xl font-semibold text-white">Crea experiencias de regalo que refuerzan la cultura y la marca.</p>
             </div>
           </div>
         </div>
+
+        <div className="mt-16 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {features.map((feature) => {
+            const Icon = feature.icon;
+            return (
+              <div key={feature.title} className="flex items-start gap-4 rounded-[1.75rem] border border-white/10 bg-slate-900/80 px-6 py-5 shadow-lg shadow-slate-950/30">
+                <span className="flex h-12 w-12 items-center justify-center rounded-3xl bg-amber-300 text-slate-950">
+                  <Icon size={20} />
+                </span>
+                <div>
+                  <h3 className="text-base font-semibold text-white">{feature.title}</h3>
+                  <p className="mt-1 text-sm text-slate-400">{feature.description}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
-      
-      <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent"></div>
     </section>
   );
 };
