@@ -8,6 +8,7 @@ import Auth from "./pages/Auth";
 import AuthRecovery from "./pages/AuthRecovery";
 import AdminProducts from "./pages/admin/ProductList";
 import ProductForm from "./pages/admin/ProductForm";
+import Cart from "./pages/Cart";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/admin/products" element={<AdminProducts />} />
           <Route path="/admin/products/new" element={<ProductForm />} />
           <Route path="/admin/products/:id/edit" element={<ProductForm />} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

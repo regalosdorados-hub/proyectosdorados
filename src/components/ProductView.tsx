@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { X, Share2, Instagram, Minus, Plus, ShoppingCart, ChevronDown, ChevronUp } from 'lucide-react'
 import { AspectRatio } from './ui/aspect-ratio'
-import { toast } from 'sonner'
+import { useNavigate } from 'react-router-dom'
+import { useCart } from '../hooks/useCart'
 
 type PriceTier = {
   min_qty: number
@@ -37,6 +38,8 @@ interface ProductViewProps {
 }
 
 const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) => {
+  const navigate = useNavigate()
+  const { addToCart } = useCart()
   const [selectedImage, setSelectedImage] = useState<string>(product.mainImage)
   const [gallery, setGallery] = useState<string[]>([])
   const [quantity, setQuantity] = useState<number>(1)
@@ -85,10 +88,20 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
   const getTotalPrice = () => getCurrentPrice() * quantity
 
   const handleAddToCart = () => {
-    toast.success(`${product.name} agregado al carrito`, {
-      description: `${quantity} unidades seleccionadas.`,
+    const formatName = product.formats.find(f => f.id === selectedFormat)?.name || 'Estándar'
+    
+    addToCart({
+      productId: product.id,
+      name: product.name,
+      image: product.mainImage,
+      price: getCurrentPrice(),
+      quantity: quantity,
+      format: formatName,
+      category: product.category
     })
-    // Aquí se podría integrar con un estado global de carrito
+    
+    onClose()
+    navigate('/cart')
   }
 
   if (!isOpen) return null
@@ -108,7 +121,6 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
         </button>
 
         <div className="grid gap-8 md:grid-cols-[1fr_1fr] p-6 md:p-10">
-          {/* Columna Izquierda: Imagen y Descripción */}
           <div className="space-y-8">
             <div className="space-y-4">
               <div className="rounded-[2.5rem] border border-slate-100 bg-slate-50 p-3 shadow-sm">
@@ -152,10 +164,8 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
             </div>
           </div>
 
-          {/* Columna Derecha: Info, Precios y Acciones */}
           <div className="flex flex-col h-full">
             <div className="flex-1 space-y-8">
-              {/* Header */}
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[10px] font-bold text-amber-500 uppercase tracking-[0.3em]">{product.category}</span>
@@ -168,7 +178,6 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
                 {product.refCode && <p className="text-xs text-slate-400 mt-1">Referencia: {product.refCode}</p>}
               </div>
 
-              {/* Precios y Calculador */}
               <div className="rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-sm space-y-8">
                 <div className="grid grid-cols-2 gap-6">
                   <div>
@@ -235,7 +244,6 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
                 </div>
               </div>
 
-              {/* Formatos */}
               {product.formats.length > 0 && (
                 <div className="space-y-3">
                   <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Seleccionar Formato / Color</h4>
@@ -244,7 +252,7 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
                       <button
                         key={format.id}
                         onClick={() => format.available && setSelectedFormat(format.id)}
-                        className={`rounded-full border px-5 py-2 text-xs font-bold transition ${selectedFormat === format.id ? 'border-amber-500 bg-amber-50 text-amber-700' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'} ${!format.available ? 'opacity-40 cursor-not-allowed' : ''}`}
+                        className={`rounded-full border px-5 py-2 text-xs font-bold transition ${selectedFormat === format.id ? 'border-amber-500 bg-amber-50 text-amber-700' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'} ${!format.available ? 'opacity-40 cursor-not-allowed' : ''}`}
                         disabled={!format.available}
                       >
                         {format.name}
@@ -255,7 +263,6 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
               )}
             </div>
 
-            {/* Botón de Acción */}
             <div className="mt-10">
               <button
                 onClick={handleAddToCart}

@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, ChevronDown } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useCart } from '../hooks/useCart';
 
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const { totalItems } = useCart();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,9 +24,9 @@ const Navbar: React.FC = () => {
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between">
           {/* Logo - Only Image */}
-          <a href="/" className="flex items-center">
+          <Link to="/" className="flex items-center">
             <img src="/RegalosDoradosLogotype.png" alt="Regalos Dorados" className="h-10 md:h-12 w-auto" />
-          </a>
+          </Link>
 
           {/* Navigation Links */}
           <div className="hidden lg:flex items-center gap-8">
@@ -35,11 +38,15 @@ const Navbar: React.FC = () => {
 
           {/* Right Actions */}
           <div className="flex items-center gap-4 md:gap-6">
-            <div className="relative flex items-center gap-2 text-white/90 hover:text-amber-500 cursor-pointer transition-colors">
+            <Link to="/cart" className="relative flex items-center gap-2 text-white/90 hover:text-amber-500 cursor-pointer transition-colors">
               <ShoppingCart size={18} />
               <span className="text-xs font-medium hidden sm:inline">Carrito</span>
-              <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-black">0</span>
-            </div>
+              {totalItems > 0 && (
+                <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-black">
+                  {totalItems}
+                </span>
+              )}
+            </Link>
             <a
               href="https://wa.me/5492901464534"
               target="_blank"
