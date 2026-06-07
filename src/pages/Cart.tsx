@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Trash2, ArrowLeft, Upload, CheckCircle2, MessageSquare, Users, Building } from 'lucide-react';
+import { Trash2, ArrowLeft, Upload, CheckCircle2, MessageSquare, Users, Building, ShoppingCart, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
 import Navbar from '../components/Navbar';
