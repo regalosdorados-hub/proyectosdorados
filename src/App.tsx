@@ -8,6 +8,10 @@ import Index from "./pages/Index";
 import GastronomicoPage from "./pages/GastronomicoPage";
 import PeluqueriaPage from "./pages/PeluqueriaPage";
 import VeterinariaPage from "./pages/VeterinariaPage";
+import Auth from "./pages/Auth";
+import AuthRecovery from "./pages/AuthRecovery";
+import AdminProducts from "./pages/admin/ProductList";
+import ProductForm from "./pages/admin/ProductForm";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +27,11 @@ const App = () => (
           <Route path="/delantales-gastronomico" element={<GastronomicoPage />} />
           <Route path="/delantales-peluqueria" element={<PeluqueriaPage />} />
           <Route path="/delantales-veterinaria" element={<VeterinariaPage />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/auth/recovery" element={<AuthRecovery />} />
+          <Route path="/admin/products" element={<AdminProducts />} />
+          <Route path="/admin/products/new" element={<ProductForm />} />
+          <Route path="/admin/products/:id/edit" element={<ProductForm />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
