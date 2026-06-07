@@ -23,6 +23,8 @@ const ProductForm: React.FC = () => {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('')
+  const [refCode, setRefCode] = useState('')
+  const [featured, setFeatured] = useState(false)
   const [variants, setVariants] = useState<ProductVariant[]>([
     { color: '', images: [], uploadFiles: [] },
   ])
@@ -40,6 +42,8 @@ const ProductForm: React.FC = () => {
         setName(data.name || '')
         setDescription(data.description || '')
         setCategory(data.category || '')
+        setRefCode(data.ref_code || '')
+        setFeatured(data.featured || false)
 
         const loadedVariants: ProductVariant[] = Array.isArray(data.variants) && data.variants.length
           ? data.variants.map((variant: any) => ({
@@ -171,6 +175,8 @@ const ProductForm: React.FC = () => {
         name,
         description,
         category,
+        ref_code: refCode,
+        featured,
         variants: initialVariants,
         images: initialVariants.flatMap((variant) => variant.images),
         prices: cleanTiers,
@@ -253,6 +259,28 @@ const ProductForm: React.FC = () => {
               </div>
             </div>
 
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700">Código de Referencia (Ref)</label>
+                <input
+                  value={refCode}
+                  onChange={(e) => setRefCode(e.target.value)}
+                  placeholder="Ej. G1, P3"
+                  className="mt-3 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
+                />
+              </div>
+              <div className="flex items-center gap-3 pt-8">
+                <input
+                  type="checkbox"
+                  id="featured"
+                  checked={featured}
+                  onChange={(e) => setFeatured(e.target.checked)}
+                  className="h-5 w-5 rounded border-slate-300 text-amber-500 focus:ring-amber-400"
+                />
+                <label htmlFor="featured" className="text-sm font-semibold text-slate-700">Producto Destacado (Aparece en Home)</label>
+              </div>
+            </div>
+
             <div>
               <label className="block text-sm font-semibold text-slate-700">Descripción</label>
               <textarea
@@ -267,7 +295,7 @@ const ProductForm: React.FC = () => {
               <div className="flex items-center justify-between gap-4 mb-4">
                 <div>
                   <h3 className="text-lg font-semibold text-slate-950">Variantes por color</h3>
-                  <p className="text-sm text-slate-500">Cada variante puede tener varias imágenes. Las imágenes se guardan en el bucket de Supabase Storage.</p>
+                  <p className="text-sm text-slate-500">Cada variante puede tener varias imágenes.</p>
                 </div>
                 <button
                   type="button"
@@ -297,11 +325,11 @@ const ProductForm: React.FC = () => {
                         onClick={() => removeVariant(variantIndex)}
                         className="rounded-full bg-red-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-600"
                       >
-                        Eliminar variante
+                        Eliminar
                       </button>
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="space-y-4 mt-4">
                       <div>
                         <label className="block text-sm font-semibold text-slate-700">Subir imágenes</label>
                         <input

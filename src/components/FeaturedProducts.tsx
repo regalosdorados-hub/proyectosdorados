@@ -1,16 +1,15 @@
-
 import React, { useState } from 'react';
 import ProductCard from './ProductCard';
 import ProductView from './ProductView';
-import { Product, getFeaturedProducts } from '../data/products';
+import { useFeaturedProducts, DbProduct } from '../hooks/useProducts';
 
 const FeaturedProducts: React.FC = () => {
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<DbProduct | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
-  const featuredProducts = getFeaturedProducts();
+  const { data: featuredProducts, isLoading } = useFeaturedProducts();
   
-  const openProductModal = (product: Product) => {
+  const openProductModal = (product: DbProduct) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
     document.body.style.overflow = 'hidden';
@@ -20,6 +19,16 @@ const FeaturedProducts: React.FC = () => {
     setIsModalOpen(false);
     document.body.style.overflow = 'auto';
   };
+
+  // Adaptador para que el componente ProductCard y ProductView sigan funcionando
+  const adaptProduct = (p: DbProduct) => ({
+    ...p,
+    price: p.prices?.[0]?.price || 0,
+    mainImage: p.variants?.[0]?.images?.[0] || p.images?.[0] || '',
+    thumbnails: p.images || [],
+    formats: p.variants?.map(v => ({ id: v.color, name: v.color, available: true })) || [],
+    refCode: p.ref_code
+  });
   
   return (
     <section id="combos" className="py-20 bg-slate-50">
@@ -31,15 +40,19 @@ const FeaturedProducts: React.FC = () => {
           </h2>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
-          {featuredProducts.map((product) => (
-            <ProductCard 
-              key={product.id}
-              product={product}
-              onClick={() => openProductModal(product)}
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="text-center py-10 text-slate-500">Cargando productos...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+            {featuredProducts?.map((product) => (
+              <ProductCard 
+                key={product.id}
+                product={adaptProduct(product)}
+                onClick={() => openProductModal(product)}
+              />
+            ))}
+          </div>
+        )}
 
         <div id="empresas" className="mt-16 rounded-[2rem] border border-slate-200 bg-white p-8 shadow-xl">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
@@ -64,7 +77,7 @@ const FeaturedProducts: React.FC = () => {
         
         {selectedProduct && (
           <ProductView 
-            product={selectedProduct} 
+            product={adaptProduct(selectedProduct)} 
             isOpen={isModalOpen}
             onClose={closeProductModal}
           />
