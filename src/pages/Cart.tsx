@@ -135,7 +135,7 @@ const Cart: React.FC = () => {
         (messageType === 'common' ? `- Mensaje: ${commonMessage}` : `- Destinatarios: ${recipients.length}`)
       );
 
-      window.open(`https://wa.me/5492901464534?text=${waMessage}`, '_blank');
+      window.open(`https://wa.me/5493516420000?text=${waMessage}`, '_blank');
       
       toast.success('Pedido registrado con éxito. Redirigiendo a WhatsApp...');
       clearCart();

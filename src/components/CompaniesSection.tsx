@@ -50,7 +50,7 @@ const CompaniesSection: React.FC = () => {
             <h3 className="text-2xl font-playfair font-bold mb-6">Solicitá tu presupuesto</h3>
             <p className="text-slate-400 mb-8">Dejanos tus datos y un asesor se pondrá en contacto para armar una propuesta a medida.</p>
             <a 
-              href="https://wa.me/5492901464534" 
+              href="https://wa.me/5493516420000" 
               target="_blank" 
               rel="noopener noreferrer"
               className="block w-full bg-amber-500 hover:bg-amber-600 text-black font-bold py-4 rounded-xl text-center transition-colors"

@@ -48,7 +48,7 @@ const Navbar: React.FC = () => {
               )}
             </Link>
             <a
-              href="https://wa.me/5492901464534"
+              href="https://wa.me/5493516420000"
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-md bg-[#B8860B] px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-white transition hover:bg-[#966d09]"

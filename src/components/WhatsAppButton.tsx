@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MessageCircle } from 'lucide-react';
 
@@ -8,7 +7,7 @@ interface WhatsAppButtonProps {
 
 const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({ message = "Hola! Quiero cotizar regalos corporativos premium para mi empresa" }) => {
   const encodedMessage = encodeURIComponent(message);
-  const whatsappUrl = `https://wa.me/5492901464534?text=${encodedMessage}`;
+  const whatsappUrl = `https://wa.me/5493516420000?text=${encodedMessage}`;
   
   return (
     <a 

@@ -75,7 +75,7 @@ const FeaturedProducts: React.FC = () => {
               </div>
             </div>
             <a
-              href="https://wa.me/5492901464534"
+              href="https://wa.me/5493516420000"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 rounded-md bg-[#B8860B] px-6 py-3 text-xs font-bold text-white transition hover:bg-[#966d09] whitespace-nowrap"
