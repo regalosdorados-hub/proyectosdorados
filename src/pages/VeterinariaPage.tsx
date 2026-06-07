@@ -1,20 +1,28 @@
-
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import WhatsAppButton from '../components/WhatsAppButton';
 import ProductCard from '../components/ProductCard';
 import ProductView from '../components/ProductView';
-import { getProductsByCategory, Product } from '../data/products';
+import { useProducts, DbProduct } from '../hooks/useProducts';
 
 const VeterinariaPage: React.FC = () => {
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
-  const products = getProductsByCategory('Veterinaria');
+  const { data: products, isLoading } = useProducts('Veterinaria');
   
-  const openProductModal = (product: Product) => {
-    setSelectedProduct(product);
+  const adaptProduct = (p: DbProduct) => ({
+    ...p,
+    price: p.prices?.[0]?.price || 0,
+    mainImage: p.variants?.[0]?.images?.[0] || p.images?.[0] || '',
+    thumbnails: p.images || [],
+    formats: p.variants?.map(v => ({ id: v.color, name: v.color, available: true })) || [],
+    refCode: p.ref_code
+  });
+
+  const openProductModal = (product: DbProduct) => {
+    setSelectedProduct(adaptProduct(product));
     setIsModalOpen(true);
     document.body.style.overflow = 'hidden';
   };
@@ -38,17 +46,21 @@ const VeterinariaPage: React.FC = () => {
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {products.map((product) => (
-                <ProductCard 
-                  key={product.id}
-                  product={product}
-                  onClick={() => openProductModal(product)}
-                />
-              ))}
-            </div>
+            {isLoading ? (
+              <div className="text-center py-12 text-slate-500">Cargando productos...</div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {products?.map((product) => (
+                  <ProductCard 
+                    key={product.id}
+                    product={adaptProduct(product)}
+                    onClick={() => openProductModal(product)}
+                  />
+                ))}
+              </div>
+            )}
             
-            {products.length === 0 && (
+            {!isLoading && products?.length === 0 && (
               <div className="text-center py-12">
                 <p className="text-gray-600">No se encontraron productos en esta categoría.</p>
               </div>
