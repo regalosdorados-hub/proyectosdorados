@@ -10,8 +10,14 @@ const features = [
 
 const Hero: React.FC = () => {
   return (
-    <section className="relative bg-[#0A0A0A] pt-24 pb-0 overflow-hidden min-h-[65vh] lg:min-h-[75vh] flex flex-col">
-      <div className="container mx-auto px-4 flex-grow flex items-center">
+    <section 
+      className="relative bg-[#0A0A0A] pt-24 pb-0 overflow-hidden min-h-[65vh] lg:min-h-[85vh] flex flex-col bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('/backgroundhero.png')" }}
+    >
+      {/* Overlay para asegurar legibilidad si la imagen es clara */}
+      <div className="absolute inset-0 bg-black/30 z-0"></div>
+
+      <div className="container mx-auto px-4 flex-grow flex items-center relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center w-full py-6">
           {/* Left Content */}
           <div className="z-10">
@@ -27,7 +33,7 @@ const Hero: React.FC = () => {
               Celebra a quienes siempre están.
             </h2>
             
-            <p className="text-sm md:text-base text-white/70 max-w-md mb-8 leading-relaxed">
+            <p className="text-sm md:text-base text-white/90 max-w-md mb-8 leading-relaxed">
               Sorprende a tus colaboradores con un regalo significativo que reconoce su esfuerzo y dedicación.
             </p>
             
@@ -42,19 +48,13 @@ const Hero: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Image */}
-          <div className="relative h-[300px] lg:h-[450px] w-full">
-            <img
-              src="/Hero_RegalosDorados.png"
-              alt="Caja de regalo premium"
-              className="w-full h-full object-contain lg:object-right"
-            />
-          </div>
+          {/* Right Column - Empty as requested to show background */}
+          <div className="hidden lg:block"></div>
         </div>
       </div>
 
       {/* Compact Features Bar */}
-      <div className="bg-black/50 backdrop-blur-sm border-t border-white/10 py-4">
+      <div className="bg-black/50 backdrop-blur-sm border-t border-white/10 py-4 relative z-10">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {features.map((feature) => {
