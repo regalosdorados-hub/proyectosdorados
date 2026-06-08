@@ -9,7 +9,7 @@ export interface ProductPrice {
 export interface ProductVariant {
   color: string;
   images: string[];
-  prices?: ProductPrice[]; // Precios específicos para esta variante
+  prices?: ProductPrice[];
 }
 
 export interface DbProduct {
@@ -18,10 +18,11 @@ export interface DbProduct {
   description: string;
   category: string;
   variants: ProductVariant[];
-  prices: ProductPrice[]; // Precios por defecto si la variante no tiene
+  prices: ProductPrice[];
   images: string[];
   featured: boolean;
   ref_code?: string;
+  display_order: number;
   created_at: string;
 }
 
@@ -32,6 +33,7 @@ export const useProducts = (category?: string) => {
       let query = supabase
         .from('products')
         .select('*')
+        .order('display_order', { ascending: true })
         .order('created_at', { ascending: false });
 
       if (category) {
@@ -53,6 +55,7 @@ export const useFeaturedProducts = () => {
         .from('products')
         .select('*')
         .eq('featured', true)
+        .order('display_order', { ascending: true })
         .order('created_at', { ascending: false });
 
       if (error) throw error;

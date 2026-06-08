@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AdminLayout from './AdminLayout'
 import { supabase } from '@/lib/supabaseClient'
+import { Hash } from 'lucide-react'
 
 type Product = {
   id: string
@@ -11,6 +12,7 @@ type Product = {
   variants?: Array<{ color: string; images: string[] }>
   prices?: Array<{ min_qty: number; price: number }>
   description?: string
+  display_order?: number
 }
 
 const formatCurrency = (value: number | null | undefined) => {
@@ -24,7 +26,12 @@ const ProductList: React.FC = () => {
 
   const fetchProducts = async () => {
     setLoading(true)
-    const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false })
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('display_order', { ascending: true })
+      .order('created_at', { ascending: false })
+    
     if (error) {
       console.error(error)
     } else {
@@ -53,7 +60,7 @@ const ProductList: React.FC = () => {
         <div>
           <p className="text-sm uppercase tracking-[0.35em] text-amber-500">Panel Admin</p>
           <h1 className="mt-2 text-4xl font-semibold text-slate-950">Productos</h1>
-          <p className="mt-2 text-slate-600">Gestiona tu catálogo, actualiza imágenes y precios por cantidad desde aquí.</p>
+          <p className="mt-2 text-slate-600">Gestiona tu catálogo y el orden en que se muestran los productos.</p>
         </div>
         <Link
           to="/admin/products/new"
@@ -64,17 +71,17 @@ const ProductList: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.35)] text-center text-slate-600">Cargando productos...</div>
+        <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm text-center text-slate-600">Cargando productos...</div>
       ) : products.length === 0 ? (
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.35)] text-center text-slate-600">
+        <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm text-center text-slate-600">
           No hay productos registrados todavía.
         </div>
       ) : (
         <div className="grid gap-6 lg:grid-cols-2">
           {products.map((product) => (
-            <article key={product.id} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.15)]">
+            <article key={product.id} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
               <div className="grid gap-4 lg:grid-cols-[140px_minmax(0,1fr)]">
-                <div className="h-40 overflow-hidden rounded-3xl bg-slate-100">
+                <div className="h-40 overflow-hidden rounded-3xl bg-slate-100 relative">
                   {product.variants?.[0]?.images?.[0] || product.images?.[0] ? (
                     <img
                       src={product.variants?.[0]?.images?.[0] || product.images?.[0]}
@@ -84,6 +91,9 @@ const ProductList: React.FC = () => {
                   ) : (
                     <div className="flex h-full items-center justify-center text-slate-400">Sin imagen</div>
                   )}
+                  <div className="absolute top-2 left-2 bg-white/90 rounded-lg px-2 py-1 text-[10px] font-bold flex items-center gap-1 shadow-sm">
+                    <Hash size={10} /> {product.display_order || 0}
+                  </div>
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-3">
@@ -93,20 +103,20 @@ const ProductList: React.FC = () => {
                     </div>
                     <div className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-amber-600">ADMIN</div>
                   </div>
-                  <p className="text-sm leading-6 text-slate-600 line-clamp-3">{product.description || 'Descripción no disponible.'}</p>
+                  <p className="text-sm leading-6 text-slate-600 line-clamp-2">{product.description || 'Descripción no disponible.'}</p>
 
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-3xl bg-slate-50 p-4 text-sm text-slate-700">
-                      <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Precio base</p>
-                      <p className="mt-2 text-lg font-semibold">{formatCurrency(product.prices?.[0]?.price)}</p>
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <div className="rounded-3xl bg-slate-50 p-3 text-sm text-slate-700">
+                      <p className="text-[9px] uppercase tracking-[0.2em] text-slate-500">Precio base</p>
+                      <p className="mt-1 font-semibold">{formatCurrency(product.prices?.[0]?.price)}</p>
                     </div>
-                    <div className="rounded-3xl bg-slate-50 p-4 text-sm text-slate-700">
-                      <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Niveles</p>
-                      <p className="mt-2 text-lg font-semibold">{product.prices?.length ?? 0}</p>
+                    <div className="rounded-3xl bg-slate-50 p-3 text-sm text-slate-700">
+                      <p className="text-[9px] uppercase tracking-[0.2em] text-slate-500">Variantes</p>
+                      <p className="mt-1 font-semibold">{product.variants?.length ?? 0}</p>
                     </div>
-                  <div className="rounded-3xl bg-slate-50 p-4 text-sm text-slate-700">
-                      <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Variantes</p>
-                      <p className="mt-2 text-lg font-semibold">{product.variants?.length ?? 0}</p>
+                    <div className="rounded-3xl bg-slate-50 p-3 text-sm text-slate-700">
+                      <p className="text-[9px] uppercase tracking-[0.2em] text-slate-500">Orden</p>
+                      <p className="mt-1 font-semibold">#{product.display_order || 0}</p>
                     </div>
                   </div>
                 </div>

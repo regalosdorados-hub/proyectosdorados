@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Save, Trash2, Plus, Image as ImageIcon, DollarSign } from 'lucide-react'
+import { ArrowLeft, Save, Trash2, Plus, Image as ImageIcon, DollarSign, Hash } from 'lucide-react'
 import AdminLayout from './AdminLayout'
 import { supabase } from '@/lib/supabaseClient'
 
@@ -28,6 +28,7 @@ const ProductForm: React.FC = () => {
   const [existingCategories, setExistingCategories] = useState<string[]>([])
   const [refCode, setRefCode] = useState('')
   const [featured, setFeatured] = useState(false)
+  const [displayOrder, setDisplayOrder] = useState(0)
   const [variants, setVariants] = useState<ProductVariant[]>([
     { color: '', images: [], prices: [{ min_qty: 1, price: 0 }], uploadFiles: [] },
   ])
@@ -53,6 +54,7 @@ const ProductForm: React.FC = () => {
         setCategory(data.category || '')
         setRefCode(data.ref_code || '')
         setFeatured(data.featured || false)
+        setDisplayOrder(data.display_order || 0)
         setGlobalPrices(data.prices?.length ? data.prices : [{ min_qty: 1, price: 0 }])
 
         const loadedVariants: ProductVariant[] = Array.isArray(data.variants) && data.variants.length
@@ -177,7 +179,6 @@ const ProductForm: React.FC = () => {
 
       const productId = id || crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`
       
-      // Primero procesamos las variantes para limpiar datos y preparar el payload inicial
       const initialVariants = variants.map(v => ({
         color: v.color.trim() || 'Estándar',
         images: v.images.filter(Boolean),
@@ -191,6 +192,7 @@ const ProductForm: React.FC = () => {
         category,
         ref_code: refCode,
         featured,
+        display_order: displayOrder,
         variants: initialVariants,
         images: initialVariants.flatMap(v => v.images),
         prices: globalPrices.filter(p => p.min_qty > 0 && p.price > 0).sort((a, b) => a.min_qty - b.min_qty),
@@ -203,7 +205,6 @@ const ProductForm: React.FC = () => {
 
       if (upsertError) throw upsertError
 
-      // Subida de archivos si existen
       const hasFiles = variants.some(v => v.uploadFiles.length > 0)
       if (hasFiles) {
         const finalVariants = await Promise.all(
@@ -259,15 +260,31 @@ const ProductForm: React.FC = () => {
                 <div className="h-2 w-2 rounded-full bg-amber-500" />
                 Información General
               </h3>
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="space-y-2">
+              <div className="grid gap-6 md:grid-cols-3">
+                <div className="space-y-2 md:col-span-2">
                   <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Nombre</label>
                   <input value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-amber-400 transition" required />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Orden de visualización</label>
+                  <div className="relative">
+                    <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    <input type="number" value={displayOrder} onChange={(e) => setDisplayOrder(Number(e.target.value))} className="w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 py-3 outline-none focus:border-amber-400 transition" placeholder="0" />
+                  </div>
+                  <p className="text-[10px] text-slate-400">Números menores aparecen primero.</p>
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Categoría</label>
                   <input list="categories-list" value={category} onChange={(e) => setCategory(e.target.value)} className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-amber-400 transition" required />
                   <datalist id="categories-list">{existingCategories.map(cat => <option key={cat} value={cat} />)}</datalist>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Código Ref.</label>
+                  <input value={refCode} onChange={(e) => setRefCode(e.target.value)} className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-amber-400 transition" placeholder="Ej: G1" />
+                </div>
+                <div className="flex items-center gap-3 pt-8">
+                  <input type="checkbox" id="featured" checked={featured} onChange={(e) => setFeatured(e.target.checked)} className="h-5 w-5 rounded border-slate-300 text-amber-500 focus:ring-amber-400" />
+                  <label htmlFor="featured" className="text-sm font-bold text-slate-700 cursor-pointer">Producto Destacado</label>
                 </div>
               </div>
               <div className="space-y-2">
@@ -301,7 +318,6 @@ const ProductForm: React.FC = () => {
                     </div>
 
                     <div className="grid lg:grid-cols-2 gap-8">
-                      {/* Imágenes de variante */}
                       <div className="space-y-4">
                         <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Imágenes</label>
                         <div className="grid grid-cols-3 gap-3">
@@ -325,7 +341,6 @@ const ProductForm: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Precios de variante */}
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Escala de Precios para esta opción</label>
