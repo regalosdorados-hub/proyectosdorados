@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, Link } from 'react-router-dom'
+import { ArrowLeft, Save, Trash2, Plus, Image as ImageIcon } from 'lucide-react'
 import AdminLayout from './AdminLayout'
 import { supabase } from '@/lib/supabaseClient'
 
@@ -242,33 +243,64 @@ const ProductForm: React.FC = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.35)]">
-          <div className="mb-6">
-            <p className="text-sm uppercase tracking-[0.35em] text-amber-500">Administración</p>
-            <h2 className="mt-4 text-3xl font-semibold text-slate-950">{id ? 'Editar' : 'Nuevo'} producto</h2>
-            <p className="mt-2 text-slate-600">Define nombre, categorías, variantes y si es un combo destacado.</p>
+        {/* Header con navegación */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <Link 
+              to="/admin/products" 
+              className="h-10 w-10 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition shadow-sm"
+            >
+              <ArrowLeft size={20} />
+            </Link>
+            <div>
+              <p className="text-[10px] font-bold text-amber-500 uppercase tracking-[0.3em]">Administración</p>
+              <h2 className="text-3xl font-playfair font-bold text-slate-950">{id ? 'Editar' : 'Nuevo'} Producto</h2>
+            </div>
           </div>
+          <div className="hidden sm:flex gap-3">
+            <Link 
+              to="/admin/products" 
+              className="px-6 py-2.5 rounded-full border border-slate-200 bg-white text-sm font-bold text-slate-600 hover:bg-slate-50 transition"
+            >
+              Cancelar
+            </Link>
+            <button
+              onClick={handleSave}
+              disabled={loading}
+              className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-slate-900 text-sm font-bold text-white hover:bg-slate-800 transition disabled:opacity-50"
+            >
+              <Save size={18} />
+              {loading ? 'Guardando...' : 'Guardar Cambios'}
+            </button>
+          </div>
+        </div>
 
-          <form onSubmit={handleSave} className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700">Nombre del producto</label>
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="mt-3 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700">Categoría</label>
-                <div className="mt-3 flex gap-2">
+        <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.1)]">
+          <form onSubmit={handleSave} className="space-y-10">
+            {/* Información Básica */}
+            <section className="space-y-6">
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-amber-500" />
+                Información General
+              </h3>
+              <div className="grid gap-6 md:grid-cols-2">
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nombre del producto</label>
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-amber-400 transition"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Categoría</label>
                   <input
                     list="categories-list"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     placeholder="Elegí o escribí una nueva"
-                    className="w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-amber-400 transition"
                     required
                   />
                   <datalist id="categories-list">
@@ -278,20 +310,18 @@ const ProductForm: React.FC = () => {
                   </datalist>
                 </div>
               </div>
-            </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700">Código de Referencia (Ref)</label>
-                <input
-                  value={refCode}
-                  onChange={(e) => setRefCode(e.target.value)}
-                  placeholder="Ej. G1, P3"
-                  className="mt-3 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
-                />
-              </div>
-              <div className="flex items-center gap-3 pt-8">
-                <div className="flex items-center h-5">
+              <div className="grid gap-6 md:grid-cols-2">
+                <div>
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Código de Referencia (Ref)</label>
+                  <input
+                    value={refCode}
+                    onChange={(e) => setRefCode(e.target.value)}
+                    placeholder="Ej. G1, P3"
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-amber-400 transition"
+                  />
+                </div>
+                <div className="flex items-center gap-3 pt-6">
                   <input
                     type="checkbox"
                     id="featured"
@@ -299,174 +329,185 @@ const ProductForm: React.FC = () => {
                     onChange={(e) => setFeatured(e.target.checked)}
                     className="h-5 w-5 rounded border-slate-300 text-amber-500 focus:ring-amber-400 cursor-pointer"
                   />
+                  <label htmlFor="featured" className="text-sm font-bold text-slate-700 cursor-pointer">
+                    Marcar como "Combo Destacado" (Aparece en el inicio)
+                  </label>
                 </div>
-                <label htmlFor="featured" className="text-sm font-semibold text-slate-700 cursor-pointer">
-                  Marcar como "Combo Destacado" (Aparece en el inicio)
-                </label>
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-slate-700">Descripción</label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="mt-3 w-full min-h-[140px] rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
-                required
-              />
-            </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Descripción</label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full min-h-[120px] rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-amber-400 transition"
+                  required
+                />
+              </div>
+            </section>
 
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-950">Variantes por color</h3>
-                  <p className="text-sm text-slate-500">Cada variante puede tener varias imágenes.</p>
-                </div>
+            {/* Variantes */}
+            <section className="space-y-6 pt-6 border-t border-slate-100">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-amber-500" />
+                  Variantes y Colores
+                </h3>
                 <button
                   type="button"
                   onClick={addVariant}
-                  className="rounded-full bg-amber-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-600"
+                  className="flex items-center gap-2 text-xs font-bold text-amber-600 hover:text-amber-700 transition"
                 >
+                  <Plus size={16} />
                   Agregar variante
                 </button>
               </div>
 
-              <div className="space-y-6">
+              <div className="grid gap-6">
                 {variants.map((variant, variantIndex) => (
-                  <div key={variantIndex} className="rounded-3xl border border-slate-200 bg-white p-5">
-                    <div className="grid gap-4 md:grid-cols-[1fr_70px] items-end">
-                      <div>
-                        <label className="block text-sm font-semibold text-slate-700">Color / Variante</label>
+                  <div key={variantIndex} className="rounded-3xl border border-slate-100 bg-slate-50/50 p-6 space-y-6">
+                    <div className="flex items-end gap-4">
+                      <div className="flex-1">
+                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nombre del Color / Variante</label>
                         <input
                           value={variant.color}
                           onChange={(e) => updateVariantColor(variantIndex, e.target.value)}
                           placeholder="Ej. Rojo, Azul, Negro"
-                          className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
+                          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-amber-400 transition"
                           required
                         />
                       </div>
                       <button
                         type="button"
                         onClick={() => removeVariant(variantIndex)}
-                        className="rounded-full bg-red-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-600"
+                        className="h-12 w-12 flex items-center justify-center rounded-2xl bg-red-50 text-red-500 hover:bg-red-100 transition"
                       >
-                        Eliminar
+                        <Trash2 size={20} />
                       </button>
                     </div>
 
-                    <div className="space-y-4 mt-4">
-                      <div>
-                        <label className="block text-sm font-semibold text-slate-700">Subir imágenes</label>
-                        <input
-                          type="file"
-                          multiple
-                          accept="image/*"
-                          onChange={(e) => addFilesToVariant(variantIndex, e.target.files)}
-                          className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none file:mr-4 file:rounded-full file:border-0 file:bg-amber-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
-                        />
-                      </div>
+                    <div className="space-y-4">
+                      <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Imágenes de la variante</label>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+                        {/* Botón de subida */}
+                        <label className="aspect-square rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-amber-400 hover:bg-amber-50 transition group">
+                          <input
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            onChange={(e) => addFilesToVariant(variantIndex, e.target.files)}
+                            className="hidden"
+                          />
+                          <Plus size={24} className="text-slate-300 group-hover:text-amber-500" />
+                          <span className="text-[10px] font-bold text-slate-400 group-hover:text-amber-600">Subir</span>
+                        </label>
 
-                      {variant.uploadFiles.length > 0 && (
-                        <div className="rounded-3xl border border-amber-200 bg-amber-50 p-4">
-                          <p className="text-sm font-semibold text-amber-700">Imágenes nuevas pendientes</p>
-                          <ul className="mt-3 space-y-2 text-sm text-slate-700">
-                            {variant.uploadFiles.map((file, fileIndex) => (
-                              <li key={`${file.name}-${fileIndex}`} className="flex items-center justify-between gap-3">
-                                <span>{file.name}</span>
-                                <button
-                                  type="button"
-                                  onClick={() => removeVariantUploadFile(variantIndex, fileIndex)}
-                                  className="rounded-full bg-red-500 px-3 py-1 text-xs font-semibold text-white transition hover:bg-red-600"
-                                >
-                                  Quitar
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {variant.images.length > 0 && (
-                        <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                          <p className="text-sm font-semibold text-slate-700">Imágenes guardadas</p>
-                          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                            {variant.images.map((imageUrl, imageIndex) => (
-                              <div key={imageUrl} className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white">
-                                <img src={imageUrl} alt={`${variant.color} ${imageIndex + 1}`} className="h-32 w-full object-cover" />
-                                <button
-                                  type="button"
-                                  onClick={() => removeVariantImage(variantIndex, imageIndex)}
-                                  className="absolute right-2 top-2 rounded-full bg-red-500 p-2 text-white opacity-80 transition hover:opacity-100"
-                                >
-                                  Eliminar
-                                </button>
-                              </div>
-                            ))}
+                        {/* Imágenes existentes */}
+                        {variant.images.map((imageUrl, imageIndex) => (
+                          <div key={imageUrl} className="relative aspect-square rounded-2xl overflow-hidden border border-slate-200 group">
+                            <img src={imageUrl} alt="Preview" className="h-full w-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => removeVariantImage(variantIndex, imageIndex)}
+                              className="absolute inset-0 bg-red-500/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+                            >
+                              <Trash2 size={20} />
+                            </button>
                           </div>
-                        </div>
-                      )}
+                        ))}
+
+                        {/* Archivos pendientes */}
+                        {variant.uploadFiles.map((file, fileIndex) => (
+                          <div key={fileIndex} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-amber-400 group">
+                            <div className="h-full w-full bg-amber-50 flex items-center justify-center">
+                              <ImageIcon size={24} className="text-amber-400" />
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeVariantUploadFile(variantIndex, fileIndex)}
+                              className="absolute inset-0 bg-red-500/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+                            >
+                              <Trash2 size={20} />
+                            </button>
+                            <div className="absolute bottom-0 left-0 right-0 bg-amber-400 py-1 px-2">
+                              <p className="text-[8px] font-bold text-white truncate">{file.name}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
+            </section>
 
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-950">Precios por cantidad</h3>
-                  <p className="text-sm text-slate-500">Configura diferentes precios para rangos de cantidad.</p>
-                </div>
+            {/* Precios */}
+            <section className="space-y-6 pt-6 border-t border-slate-100">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-amber-500" />
+                  Escala de Precios
+                </h3>
                 <button
                   type="button"
                   onClick={addPriceTier}
-                  className="rounded-full bg-amber-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-600"
+                  className="flex items-center gap-2 text-xs font-bold text-amber-600 hover:text-amber-700 transition"
                 >
-                  Agregar precio
+                  <Plus size={16} />
+                  Agregar nivel
                 </button>
               </div>
-              <div className="space-y-4">
+
+              <div className="grid gap-4">
                 {priceTiers.map((tier, index) => (
-                  <div key={index} className="grid gap-4 md:grid-cols-[130px_1fr_70px] items-end">
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-700">Cantidad mínima</label>
-                      <input
-                        type="number"
-                        value={tier.min_qty}
-                        min={1}
-                        onChange={(e) => updatePriceTier(index, 'min_qty', Number(e.target.value))}
-                        className="mt-2 w-full rounded-3xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-700">Precio unitario</label>
-                      <input
-                        type="number"
-                        value={tier.price}
-                        min={0}
-                        onChange={(e) => updatePriceTier(index, 'price', Number(e.target.value))}
-                        className="mt-2 w-full rounded-3xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100"
-                      />
+                  <div key={index} className="flex items-end gap-4 p-4 rounded-2xl bg-slate-50/50 border border-slate-100">
+                    <div className="flex-1 grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Cant. Mínima</label>
+                        <input
+                          type="number"
+                          value={tier.min_qty}
+                          min={1}
+                          onChange={(e) => updatePriceTier(index, 'min_qty', Number(e.target.value))}
+                          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm outline-none focus:border-amber-400 transition"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Precio Unitario</label>
+                        <input
+                          type="number"
+                          value={tier.price}
+                          min={0}
+                          onChange={(e) => updatePriceTier(index, 'price', Number(e.target.value))}
+                          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm outline-none focus:border-amber-400 transition"
+                        />
+                      </div>
                     </div>
                     <button
                       type="button"
                       onClick={() => removePriceTier(index)}
-                      className="mt-2 rounded-full bg-red-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-600"
+                      className="h-10 w-10 flex items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition"
                     >
-                      Eliminar
+                      <Trash2 size={18} />
                     </button>
                   </div>
                 ))}
               </div>
-            </div>
+            </section>
 
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-4 pt-10 border-t border-slate-100">
+              <Link 
+                to="/admin/products" 
+                className="px-8 py-4 rounded-full border border-slate-200 bg-white text-sm font-bold text-slate-600 hover:bg-slate-50 transition"
+              >
+                Descartar
+              </Link>
               <button
                 type="submit"
                 disabled={loading}
-                className="rounded-full bg-slate-950 px-8 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+                className="px-12 py-4 rounded-full bg-slate-900 text-sm font-bold text-white hover:bg-slate-800 transition shadow-xl disabled:opacity-50"
               >
-                {loading ? 'Guardando...' : 'Guardar producto'}
+                {loading ? 'Guardando...' : 'Guardar Producto'}
               </button>
             </div>
           </form>
