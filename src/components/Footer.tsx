@@ -1,5 +1,5 @@
 import React from 'react';
-import { Instagram } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -31,13 +31,13 @@ const Footer: React.FC = () => {
                 <h3 className="font-playfair text-white font-medium mb-3">Contacto</h3>
                 <p className="text-slate-400 mb-1">Córdoba, Argentina</p>
                 <a 
-                  href="https://instagram.com/regalosdorados"
+                  href="https://wa.me/5493516420000"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-400 hover:text-amber-300 transition-colors flex items-center gap-1"
+                  className="text-slate-400 hover:text-amber-300 transition-colors flex items-center gap-2"
                 >
-                  <Instagram size={16} />
-                  <span className="break-all">@regalosdorados</span>
+                  <MessageCircle size={16} />
+                  <span className="break-all">+54 9 351 6420000</span>
                 </a>
               </div>
             </div>
