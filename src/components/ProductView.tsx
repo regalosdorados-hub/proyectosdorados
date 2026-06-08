@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { X, Share2, Instagram, Minus, Plus, ShoppingCart, ChevronDown, ChevronUp } from 'lucide-react'
+import { X, Share2, Minus, Plus, ShoppingCart, ChevronDown, ChevronUp } from 'lucide-react'
 import { AspectRatio } from './ui/aspect-ratio'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../hooks/useCart'
+import { Slider } from './ui/slider'
+import { toast } from 'sonner'
 
 type PriceTier = {
   min_qty: number
@@ -49,20 +51,23 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
   )
 
   const priceTiers = useMemo<PriceTier[]>(() => {
+    let tiers: PriceTier[] = []
+    
     if (product.prices?.length) {
-      return [...product.prices]
-        .filter((tier) => tier.min_qty > 0 && tier.price > 0)
-        .sort((a, b) => a.min_qty - b.min_qty)
+      tiers = [...product.prices]
+    } else {
+      tiers = [{ min_qty: 1, price: product.price }]
+      if (product.priceDiscount1 && product.priceDiscount1 > 0) {
+        tiers.push({ min_qty: 5, price: product.priceDiscount1 })
+      }
+      if (product.priceDiscount2 && product.priceDiscount2 > 0) {
+        tiers.push({ min_qty: 10, price: product.priceDiscount2 })
+      }
     }
 
-    const legacyTiers: PriceTier[] = [{ min_qty: 1, price: product.price }]
-    if (product.priceDiscount1 && product.priceDiscount1 > 0) {
-      legacyTiers.push({ min_qty: 5, price: product.priceDiscount1 })
-    }
-    if (product.priceDiscount2 && product.priceDiscount2 > 0) {
-      legacyTiers.push({ min_qty: 10, price: product.priceDiscount2 })
-    }
-    return legacyTiers
+    return tiers
+      .filter((tier) => tier.min_qty > 0 && tier.price > 0)
+      .sort((a, b) => a.min_qty - b.min_qty)
   }, [product])
 
   useEffect(() => {
@@ -77,15 +82,37 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
     setSelectedFormat(product.formats.length > 0 ? product.formats[0].id : null)
   }, [product, isOpen])
 
-  const getCurrentPrice = () => {
+  const currentPrice = useMemo(() => {
     const selected = [...priceTiers]
-      .sort((a, b) => a.min_qty - b.min_qty)
       .filter((tier) => tier.min_qty <= quantity)
       .pop()
     return selected?.price ?? product.price
-  }
+  }, [quantity, priceTiers, product.price])
 
-  const getTotalPrice = () => getCurrentPrice() * quantity
+  const totalPrice = useMemo(() => currentPrice * quantity, [currentPrice, quantity])
+
+  const handleShare = async () => {
+    const shareData = {
+      title: product.name,
+      text: `Mira este producto en Regalos Dorados: ${product.name}`,
+      url: window.location.href,
+    }
+
+    if (navigator.share && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      try {
+        await navigator.share(shareData)
+      } catch (err) {
+        console.log('Error sharing', err)
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(window.location.href)
+        toast.success('Enlace copiado al portapapeles')
+      } catch (err) {
+        toast.error('No se pudo copiar el enlace')
+      }
+    }
+  }
 
   const handleAddToCart = () => {
     const formatName = product.formats.find(f => f.id === selectedFormat)?.name || 'Estándar'
@@ -94,7 +121,7 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
       productId: product.id,
       name: product.name,
       image: product.mainImage,
-      price: getCurrentPrice(),
+      price: currentPrice,
       quantity: quantity,
       format: formatName,
       category: product.category
@@ -106,9 +133,8 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
 
   if (!isOpen) return null
 
-  const currentPrice = getCurrentPrice()
-  const totalPrice = getTotalPrice()
   const isLongDescription = product.description.length > 160
+  const maxSliderQty = 100
 
   return (
     <div className="product-modal" onClick={onClose}>
@@ -170,8 +196,13 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[10px] font-bold text-amber-500 uppercase tracking-[0.3em]">{product.category}</span>
                   <div className="flex gap-2">
-                    <button className="p-2 text-slate-400 hover:text-amber-500 transition"><Instagram size={18} /></button>
-                    <button className="p-2 text-slate-400 hover:text-amber-500 transition"><Share2 size={18} /></button>
+                    <button 
+                      onClick={handleShare}
+                      className="flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-200 transition"
+                    >
+                      <Share2 size={16} />
+                      Compartir
+                    </button>
                   </div>
                 </div>
                 <h2 className="text-3xl font-playfair font-bold text-slate-900 leading-tight">{product.name}</h2>
@@ -191,45 +222,57 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
                 </div>
 
                 <div className="pt-6 border-t border-slate-100">
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-6">
                     <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Cantidad</h4>
-                    {priceTiers.length > 1 && (
-                      <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
-                        Descuentos por volumen activos
-                      </span>
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center rounded-full border border-slate-200 bg-slate-50 p-1.5">
+                    <div className="flex items-center gap-2">
                       <button 
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-600 shadow-sm hover:bg-slate-100 transition"
+                        className="h-6 w-6 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200"
                       >
-                        <Minus size={18} />
+                        <Minus size={14} />
                       </button>
-                      <input 
-                        type="number" 
-                        value={quantity}
-                        onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                        className="w-16 bg-transparent text-center text-lg font-bold text-slate-900 outline-none"
-                      />
+                      <span className="text-lg font-bold text-slate-900 w-8 text-center">{quantity}</span>
                       <button 
-                        onClick={() => setQuantity(quantity + 1)}
-                        className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-600 shadow-sm hover:bg-slate-100 transition"
+                        onClick={() => setQuantity(Math.min(maxSliderQty, quantity + 1))}
+                        className="h-6 w-6 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200"
                       >
-                        <Plus size={18} />
+                        <Plus size={14} />
                       </button>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-[11px] text-slate-400 leading-tight">
-                        Ajusta la cantidad para ver cómo cambia el precio unitario automáticamente.
-                      </p>
+                  </div>
+                  
+                  <div className="relative px-2 mb-10">
+                    <Slider
+                      value={[quantity]}
+                      onValueChange={(vals) => setQuantity(vals[0])}
+                      max={maxSliderQty}
+                      min={1}
+                      step={1}
+                      className="py-4"
+                    />
+                    {/* Marcadores de precio */}
+                    <div className="absolute top-1/2 left-2 right-2 -translate-y-1/2 pointer-events-none h-full">
+                      {priceTiers.map((tier) => {
+                        if (tier.min_qty === 1) return null;
+                        const position = ((tier.min_qty - 1) / (maxSliderQty - 1)) * 100;
+                        return (
+                          <div 
+                            key={tier.min_qty}
+                            className="absolute top-1/2 -translate-y-1/2 flex flex-col items-center"
+                            style={{ left: `${position}%` }}
+                          >
+                            <div className={`h-3 w-3 rounded-full border-2 border-white shadow-sm ${quantity >= tier.min_qty ? 'bg-amber-500' : 'bg-slate-300'}`} />
+                            <span className="absolute top-6 text-[9px] font-bold text-slate-400 whitespace-nowrap">
+                              {tier.min_qty} uds
+                            </span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
 
                   {priceTiers.length > 1 && (
-                    <div className="mt-6 grid grid-cols-3 gap-2">
+                    <div className="mt-8 grid grid-cols-3 gap-2">
                       {priceTiers.map((tier) => (
                         <div 
                           key={tier.min_qty} 
