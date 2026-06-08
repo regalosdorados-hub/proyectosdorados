@@ -315,7 +315,7 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
                 Agregar al carrito
               </button>
               <p className="text-center text-[10px] text-slate-400 mt-4 uppercase tracking-widest">
-                Envío a todo el país • Factura A disponible
+                Envío en Ciudad de Córdoba • Factura A disponible
               </p>
             </div>
           </div>

@@ -4,7 +4,7 @@ import { Sparkles, Percent, Truck, Headphones, ArrowRight, Tag } from 'lucide-re
 const features = [
   { title: 'Personalizados', icon: Sparkles },
   { title: 'Descuentos x Cantidad', icon: Percent },
-  { title: 'Envíos a todo el país', icon: Truck },
+  { title: 'Envíos en Ciudad de Córdoba', icon: Truck },
   { title: 'ATENCIÓN AL CLIENTE', icon: Headphones }
 ];
 

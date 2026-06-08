@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Accordion,
@@ -23,9 +22,9 @@ const FAQ: React.FC = () => {
             </AccordionItem>
 
             <AccordionItem value="item-2" className="rounded-[1.5rem] border border-white/10 bg-slate-950/80">
-              <AccordionTrigger className="text-left px-5 text-white">¿Hacen envíos a todo el país?</AccordionTrigger>
+              <AccordionTrigger className="text-left px-5 text-white">¿Hacen envíos en Ciudad de Córdoba?</AccordionTrigger>
               <AccordionContent className="px-5 text-slate-300">
-                Sí, realizamos envíos a todo Argentina a través de empresas de correo confiables. Los tiempos de entrega varían según la ubicación.
+                Sí, realizamos envíos en toda la Ciudad de Córdoba y alrededores con logística propia o servicios locales de confianza.
               </AccordionContent>
             </AccordionItem>
 

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Sparkles, Percent, Truck, UserCheck } from 'lucide-react';
 
@@ -14,7 +13,7 @@ const features = [
     icon: Percent,
   },
   {
-    title: 'Envíos a todo el país',
+    title: 'Envíos en Ciudad de Córdoba',
     description: 'Logística confiable para que tu regalo llegue puntual a cualquier sede.',
     icon: Truck,
   },

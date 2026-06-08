@@ -35,10 +35,6 @@ const Cart: React.FC = () => {
     setRecipients(newRecipients);
   };
 
-  const removeRecipient = (index: number) => {
-    setRecipients(recipients.filter((_, i) => i !== index));
-  };
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -431,7 +427,7 @@ const Cart: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                     <CheckCircle2 size={14} className="text-emerald-500" />
-                    Envíos a todo el país
+                    Envíos en Ciudad de Córdoba
                   </div>
                 </div>
               </div>
