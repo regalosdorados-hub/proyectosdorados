@@ -35,6 +35,10 @@ const Cart: React.FC = () => {
     setRecipients(newRecipients);
   };
 
+  const removeRecipient = (index: number) => {
+    setRecipients(recipients.filter((_, i) => i !== index));
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -75,7 +79,8 @@ const Cart: React.FC = () => {
           message_type: messageType,
           common_message: commonMessage,
           recipients: recipients,
-          has_logo: addLogo
+          has_logo: addLogo,
+          logo_attached: !!logoPreview
         },
         total_price: totalPrice,
         status: 'pending'
@@ -86,6 +91,14 @@ const Cart: React.FC = () => {
         .insert([orderData]);
 
       if (dbError) throw dbError;
+
+      // Determinar el texto del logo para WhatsApp
+      let logoText = "- Sin logo personalizado\n";
+      if (addLogo) {
+        logoText = logoPreview 
+          ? `✅ *LOGO CARGADO EN EL PEDIDO*\n` 
+          : `⚠️ *PENDIENTE: ADJUNTARÉ EL LOGO A CONTINUACIÓN EN ESTE CHAT*\n`;
+      }
 
       // 2. Preparar mensaje de WhatsApp
       const waMessage = encodeURIComponent(
@@ -98,14 +111,18 @@ const Cart: React.FC = () => {
         cart.map(item => `- ${item.name} (${item.quantity} uds) - ${item.format}`).join('\n') +
         `\n\n*Total Estimado:* $${totalPrice.toLocaleString()}\n\n` +
         `*Personalización:*\n` +
-        (addLogo ? `⚠️ *ADJUNTARÉ EL LOGO A CONTINUACIÓN EN ESTE CHAT*\n` : `- Sin logo personalizado\n`) +
+        logoText +
         `- Mensajes: ${messageType === 'common' ? 'General' : 'Individuales'}\n` +
         (messageType === 'common' ? `- Mensaje: ${commonMessage}` : `- Destinatarios: ${recipients.length}`)
       );
 
       window.open(`https://wa.me/5493516420000?text=${waMessage}`, '_blank');
       
-      toast.success('Pedido registrado. ¡No olvides adjuntar tu logo en el chat de WhatsApp!');
+      const successMsg = logoPreview 
+        ? 'Pedido registrado con éxito.' 
+        : 'Pedido registrado. ¡No olvides adjuntar tu logo en el chat de WhatsApp!';
+      
+      toast.success(successMsg);
       clearCart();
       navigate('/');
     } catch (error: any) {
