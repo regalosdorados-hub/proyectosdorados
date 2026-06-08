@@ -12,7 +12,9 @@ import {
   Phone,
   ChevronDown,
   ChevronUp,
-  Package
+  Package,
+  Download,
+  Image as ImageIcon
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -21,6 +23,7 @@ type Order = {
   company_name: string
   representative_name: string
   contact_number: string
+  logo_url: string | null
   items: any[]
   personalization_details: any
   total_price: number
@@ -193,9 +196,21 @@ const OrderList: React.FC = () => {
                     <div className="space-y-4">
                       <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Personalización</h4>
                       <div className="rounded-2xl bg-slate-50 p-4 text-sm space-y-3">
-                        <p className="text-slate-600">
-                          <span className="font-bold text-slate-900">Logo:</span> {order.personalization_details?.has_logo ? 'Sí (Adjunto en WA)' : 'No'}
-                        </p>
+                        <div className="flex items-center justify-between">
+                          <p className="text-slate-600">
+                            <span className="font-bold text-slate-900">Logo:</span> {order.logo_url ? '✅ Cargado' : '❌ No adjunto'}
+                          </p>
+                          {order.logo_url && (
+                            <a 
+                              href={order.logo_url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-1 text-[10px] font-bold text-amber-600 hover:underline"
+                            >
+                              <Download size={12} /> Descargar
+                            </a>
+                          )}
+                        </div>
                         <p className="text-slate-600">
                           <span className="font-bold text-slate-900">Mensajes:</span> {order.personalization_details?.message_type === 'common' ? 'General' : 'Individuales'}
                         </p>

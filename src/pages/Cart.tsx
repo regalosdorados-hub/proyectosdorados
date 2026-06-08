@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Trash2, ArrowLeft, Upload, CheckCircle2, MessageSquare, Users, Building, ShoppingCart, Plus, User, Phone, Image as ImageIcon, X } from 'lucide-react';
+import { Trash2, ArrowLeft, Upload, CheckCircle2, MessageSquare, Users, Building, ShoppingCart, Plus, User, Phone, Image as ImageIcon, X, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
 import Navbar from '../components/Navbar';
@@ -20,6 +20,7 @@ const Cart: React.FC = () => {
   
   // Personalization State
   const [addLogo, setAddLogo] = useState(false);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<'common' | 'individual'>('common');
   const [commonMessage, setCommonMessage] = useState('');
@@ -46,6 +47,7 @@ const Cart: React.FC = () => {
         toast.error("La imagen no debe superar los 5MB");
         return;
       }
+      setLogoFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setLogoPreview(reader.result as string);
@@ -55,12 +57,12 @@ const Cart: React.FC = () => {
   };
 
   const removeLogo = () => {
+    setLogoFile(null);
     setLogoPreview(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleCheckout = async () => {
-    // Validaciones
     if (!companyName || !representativeName || !contactNumber) {
       toast.error("Por favor completa los datos de contacto obligatorios");
       return;
@@ -69,18 +71,40 @@ const Cart: React.FC = () => {
     setLoading(true);
 
     try {
-      // 1. Guardar Pedido en DB (sin logo_url)
+      let uploadedLogoUrl = null;
+
+      // 1. Subir Logo si existe
+      if (addLogo && logoFile) {
+        const fileExt = logoFile.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `order-logos/${Date.now()}-${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('product-images')
+          .upload(filePath, logoFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage
+          .from('product-images')
+          .getPublicUrl(filePath);
+        
+        uploadedLogoUrl = urlData.publicUrl;
+      }
+
+      // 2. Guardar Pedido en DB
       const orderData = {
         company_name: companyName,
         representative_name: representativeName,
         contact_number: contactNumber,
+        logo_url: uploadedLogoUrl,
         items: cart,
         personalization_details: {
           message_type: messageType,
           common_message: commonMessage,
           recipients: recipients,
           has_logo: addLogo,
-          logo_attached: !!logoPreview
+          logo_attached: !!uploadedLogoUrl
         },
         total_price: totalPrice,
         status: 'pending'
@@ -92,15 +116,14 @@ const Cart: React.FC = () => {
 
       if (dbError) throw dbError;
 
-      // Determinar el texto del logo para WhatsApp
+      // 3. Preparar mensaje de WhatsApp
       let logoText = "- Sin logo personalizado\n";
       if (addLogo) {
-        logoText = logoPreview 
+        logoText = uploadedLogoUrl 
           ? `✅ *LOGO CARGADO EN EL PEDIDO*\n` 
           : `⚠️ *PENDIENTE: ADJUNTARÉ EL LOGO A CONTINUACIÓN EN ESTE CHAT*\n`;
       }
 
-      // 2. Preparar mensaje de WhatsApp
       const waMessage = encodeURIComponent(
         `¡Hola! Acabo de registrar un pedido en Regalos Dorados.\n\n` +
         `*Datos de la Empresa:*\n` +
@@ -118,11 +141,7 @@ const Cart: React.FC = () => {
 
       window.open(`https://wa.me/5493516420000?text=${waMessage}`, '_blank');
       
-      const successMsg = logoPreview 
-        ? 'Pedido registrado con éxito.' 
-        : 'Pedido registrado. ¡No olvides adjuntar tu logo en el chat de WhatsApp!';
-      
-      toast.success(successMsg);
+      toast.success('Pedido registrado con éxito.');
       clearCart();
       navigate('/');
     } catch (error: any) {
