@@ -9,6 +9,7 @@ export interface ProductPrice {
 export interface ProductVariant {
   color: string;
   images: string[];
+  prices?: ProductPrice[]; // Precios específicos para esta variante
 }
 
 export interface DbProduct {
@@ -17,7 +18,7 @@ export interface DbProduct {
   description: string;
   category: string;
   variants: ProductVariant[];
-  prices: ProductPrice[];
+  prices: ProductPrice[]; // Precios por defecto si la variante no tiene
   images: string[];
   featured: boolean;
   ref_code?: string;

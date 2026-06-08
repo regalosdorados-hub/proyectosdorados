@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Save, Trash2, Plus, Image as ImageIcon } from 'lucide-react'
+import { ArrowLeft, Save, Trash2, Plus, Image as ImageIcon, DollarSign } from 'lucide-react'
 import AdminLayout from './AdminLayout'
 import { supabase } from '@/lib/supabaseClient'
 
@@ -12,6 +12,7 @@ type PriceTier = {
 type ProductVariant = {
   color: string
   images: string[]
+  prices: PriceTier[]
   uploadFiles: File[]
 }
 
@@ -28,9 +29,9 @@ const ProductForm: React.FC = () => {
   const [refCode, setRefCode] = useState('')
   const [featured, setFeatured] = useState(false)
   const [variants, setVariants] = useState<ProductVariant[]>([
-    { color: '', images: [], uploadFiles: [] },
+    { color: '', images: [], prices: [{ min_qty: 1, price: 0 }], uploadFiles: [] },
   ])
-  const [priceTiers, setPriceTiers] = useState<PriceTier[]>([{ min_qty: 1, price: 0 }])
+  const [globalPrices, setGlobalPrices] = useState<PriceTier[]>([{ min_qty: 1, price: 0 }])
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -52,21 +53,23 @@ const ProductForm: React.FC = () => {
         setCategory(data.category || '')
         setRefCode(data.ref_code || '')
         setFeatured(data.featured || false)
+        setGlobalPrices(data.prices?.length ? data.prices : [{ min_qty: 1, price: 0 }])
 
         const loadedVariants: ProductVariant[] = Array.isArray(data.variants) && data.variants.length
           ? data.variants.map((variant: any) => ({
               color: String(variant.color ?? '').trim(),
               images: Array.isArray(variant.images) ? variant.images.filter(Boolean) : [],
+              prices: variant.prices?.length ? variant.prices : [{ min_qty: 1, price: 0 }],
               uploadFiles: [],
             }))
           : [{
-              color: 'Sin color',
+              color: 'Estándar',
               images: Array.isArray(data.images) ? data.images.filter(Boolean) : [],
+              prices: [{ min_qty: 1, price: 0 }],
               uploadFiles: [],
             }]
 
-        setVariants(loadedVariants.length ? loadedVariants : [{ color: '', images: [], uploadFiles: [] }])
-        setPriceTiers(data.prices?.length ? data.prices : [{ min_qty: 1, price: data.price ?? 0 }])
+        setVariants(loadedVariants)
       }
       setLoading(false)
     }
@@ -81,10 +84,32 @@ const ProductForm: React.FC = () => {
   }
 
   const addVariant = () =>
-    setVariants((current) => [...current, { color: '', images: [], uploadFiles: [] }])
+    setVariants((current) => [...current, { color: '', images: [], prices: [{ min_qty: 1, price: 0 }], uploadFiles: [] }])
 
   const removeVariant = (index: number) =>
     setVariants((current) => current.filter((_, idx) => idx !== index))
+
+  const updateVariantPrice = (vIdx: number, pIdx: number, field: 'min_qty' | 'price', value: number) => {
+    setVariants((current) =>
+      current.map((v, idx) => {
+        if (idx !== vIdx) return v
+        const newPrices = v.prices.map((p, i) => (i === pIdx ? { ...p, [field]: value } : p))
+        return { ...v, prices: newPrices }
+      })
+    )
+  }
+
+  const addVariantPrice = (vIdx: number) => {
+    setVariants((current) =>
+      current.map((v, idx) => (idx === vIdx ? { ...v, prices: [...v.prices, { min_qty: 1, price: 0 }] } : v))
+    )
+  }
+
+  const removeVariantPrice = (vIdx: number, pIdx: number) => {
+    setVariants((current) =>
+      current.map((v, idx) => (idx === vIdx ? { ...v, prices: v.prices.filter((_, i) => i !== pIdx) } : v))
+    )
+  }
 
   const addFilesToVariant = (index: number, files: FileList | null) => {
     if (!files) return
@@ -118,15 +143,6 @@ const ProductForm: React.FC = () => {
     )
   }
 
-  const updatePriceTier = (index: number, field: 'min_qty' | 'price', value: number) => {
-    setPriceTiers((current) =>
-      current.map((tier, idx) => (idx === index ? { ...tier, [field]: value } : tier))
-    )
-  }
-
-  const addPriceTier = () => setPriceTiers((current) => [...current, { min_qty: 1, price: 0 }])
-  const removePriceTier = (index: number) => setPriceTiers((current) => current.filter((_, idx) => idx !== index))
-
   const sanitizeFolderName = (value: string) =>
     value.trim().toLowerCase().replace(/[^a-z0-9-_]+/g, '-').replace(/^-+|-+$/g, '') || 'sin-color'
 
@@ -141,14 +157,10 @@ const ProductForm: React.FC = () => {
         upsert: true,
       })
 
-      if (uploadError) {
-        throw uploadError
-      }
+      if (uploadError) throw uploadError
 
       const { data: urlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(filePath)
-      if (urlData?.publicUrl) {
-        uploadedUrls.push(urlData.publicUrl)
-      }
+      if (urlData?.publicUrl) uploadedUrls.push(urlData.publicUrl)
     }
 
     return uploadedUrls
@@ -159,30 +171,19 @@ const ProductForm: React.FC = () => {
     setLoading(true)
 
     try {
-      // Guardar categoría si es nueva
       if (category && !existingCategories.includes(category)) {
         await supabase.from('categories').insert([{ name: category }])
       }
 
-      const cleanVariants = variants
-        .map((variant) => ({
-          color: variant.color.trim() || 'Sin color',
-          images: variant.images.filter(Boolean),
-          uploadFiles: variant.uploadFiles,
-        }))
-        .filter((variant) => variant.color || variant.images.length || variant.uploadFiles.length)
-
-      const initialVariants = cleanVariants.map((variant) => ({
-        color: variant.color,
-        images: variant.images,
+      const productId = id || crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`
+      
+      // Primero procesamos las variantes para limpiar datos y preparar el payload inicial
+      const initialVariants = variants.map(v => ({
+        color: v.color.trim() || 'Estándar',
+        images: v.images.filter(Boolean),
+        prices: v.prices.filter(p => p.min_qty > 0 && p.price > 0).sort((a, b) => a.min_qty - b.min_qty)
       }))
 
-      const cleanTiers = priceTiers
-        .map((tier) => ({ min_qty: Number(tier.min_qty), price: Number(tier.price) }))
-        .filter((tier) => tier.min_qty > 0 && tier.price > 0)
-        .sort((a, b) => a.min_qty - b.min_qty)
-
-      const productId = id || crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`
       const payload = {
         id: productId,
         name,
@@ -191,8 +192,8 @@ const ProductForm: React.FC = () => {
         ref_code: refCode,
         featured,
         variants: initialVariants,
-        images: initialVariants.flatMap((variant) => variant.images),
-        prices: cleanTiers,
+        images: initialVariants.flatMap(v => v.images),
+        prices: globalPrices.filter(p => p.min_qty > 0 && p.price > 0).sort((a, b) => a.min_qty - b.min_qty),
         updated_at: new Date(),
       }
 
@@ -200,56 +201,42 @@ const ProductForm: React.FC = () => {
         ? await supabase.from('products').update(payload).eq('id', productId)
         : await supabase.from('products').insert([payload])
 
-      if (upsertError) {
-        throw upsertError
-      }
+      if (upsertError) throw upsertError
 
-      const hasFiles = cleanVariants.some((variant) => variant.uploadFiles.length > 0)
+      // Subida de archivos si existen
+      const hasFiles = variants.some(v => v.uploadFiles.length > 0)
       if (hasFiles) {
         const finalVariants = await Promise.all(
-          cleanVariants.map(async (variant) => {
-            const uploadedUrls = await uploadVariantFiles(productId, variant)
+          variants.map(async (v, idx) => {
+            const uploadedUrls = await uploadVariantFiles(productId, v)
             return {
-              color: variant.color,
-              images: [...variant.images, ...uploadedUrls],
+              ...initialVariants[idx],
+              images: [...initialVariants[idx].images, ...uploadedUrls]
             }
           })
         )
 
-        const updatedPayload = {
+        await supabase.from('products').update({
           variants: finalVariants,
-          images: finalVariants.flatMap((variant) => variant.images),
-          updated_at: new Date(),
-        }
-
-        const { error: updateImagesError } = await supabase
-          .from('products')
-          .update(updatedPayload)
-          .eq('id', productId)
-
-        if (updateImagesError) {
-          throw updateImagesError
-        }
+          images: finalVariants.flatMap(v => v.images),
+          updated_at: new Date()
+        }).eq('id', productId)
       }
 
       navigate('/admin/products')
     } catch (error: any) {
-      alert(error?.message || 'Ocurrió un error al guardar el producto.')
+      alert(error?.message || 'Error al guardar.')
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Header con navegación */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Link 
-              to="/admin/products" 
-              className="h-10 w-10 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition shadow-sm"
-            >
+            <Link to="/admin/products" className="h-10 w-10 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition shadow-sm">
               <ArrowLeft size={20} />
             </Link>
             <div>
@@ -257,259 +244,115 @@ const ProductForm: React.FC = () => {
               <h2 className="text-3xl font-playfair font-bold text-slate-950">{id ? 'Editar' : 'Nuevo'} Producto</h2>
             </div>
           </div>
-          <div className="hidden sm:flex gap-3">
-            <Link 
-              to="/admin/products" 
-              className="px-6 py-2.5 rounded-full border border-slate-200 bg-white text-sm font-bold text-slate-600 hover:bg-slate-50 transition"
-            >
-              Cancelar
-            </Link>
-            <button
-              onClick={handleSave}
-              disabled={loading}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-slate-900 text-sm font-bold text-white hover:bg-slate-800 transition disabled:opacity-50"
-            >
+          <div className="flex gap-3">
+            <button onClick={handleSave} disabled={loading} className="flex items-center gap-2 px-8 py-3 rounded-full bg-slate-900 text-sm font-bold text-white hover:bg-slate-800 transition disabled:opacity-50 shadow-xl">
               <Save size={18} />
-              {loading ? 'Guardando...' : 'Guardar Cambios'}
+              {loading ? 'Guardando...' : 'Guardar Producto'}
             </button>
           </div>
         </div>
 
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.1)]">
-          <form onSubmit={handleSave} className="space-y-10">
-            {/* Información Básica */}
+        <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
+          <form onSubmit={handleSave} className="space-y-12">
             <section className="space-y-6">
               <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                 <div className="h-2 w-2 rounded-full bg-amber-500" />
                 Información General
               </h3>
               <div className="grid gap-6 md:grid-cols-2">
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nombre del producto</label>
-                  <input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-amber-400 transition"
-                    required
-                  />
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Nombre</label>
+                  <input value={name} onChange={(e) => setName(e.target.value)} className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-amber-400 transition" required />
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Categoría</label>
-                  <input
-                    list="categories-list"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    placeholder="Elegí o escribí una nueva"
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-amber-400 transition"
-                    required
-                  />
-                  <datalist id="categories-list">
-                    {existingCategories.map(cat => (
-                      <option key={cat} value={cat} />
-                    ))}
-                  </datalist>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Categoría</label>
+                  <input list="categories-list" value={category} onChange={(e) => setCategory(e.target.value)} className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-amber-400 transition" required />
+                  <datalist id="categories-list">{existingCategories.map(cat => <option key={cat} value={cat} />)}</datalist>
                 </div>
               </div>
-
-              <div className="grid gap-6 md:grid-cols-2">
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Código de Referencia (Ref)</label>
-                  <input
-                    value={refCode}
-                    onChange={(e) => setRefCode(e.target.value)}
-                    placeholder="Ej. G1, P3"
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-amber-400 transition"
-                  />
-                </div>
-                <div className="flex items-center gap-3 pt-6">
-                  <input
-                    type="checkbox"
-                    id="featured"
-                    checked={featured}
-                    onChange={(e) => setFeatured(e.target.checked)}
-                    className="h-5 w-5 rounded border-slate-300 text-amber-500 focus:ring-amber-400 cursor-pointer"
-                  />
-                  <label htmlFor="featured" className="text-sm font-bold text-slate-700 cursor-pointer">
-                    Marcar como "Combo Destacado" (Aparece en el inicio)
-                  </label>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Descripción</label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full min-h-[120px] rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 outline-none focus:border-amber-400 transition"
-                  required
-                />
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Descripción</label>
+                <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full min-h-[100px] rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-amber-400 transition" required />
               </div>
             </section>
 
-            {/* Variantes */}
-            <section className="space-y-6 pt-6 border-t border-slate-100">
+            <section className="space-y-8 pt-8 border-t border-slate-100">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-amber-500" />
-                  Variantes y Colores
+                  Variantes y Precios Específicos
                 </h3>
-                <button
-                  type="button"
-                  onClick={addVariant}
-                  className="flex items-center gap-2 text-xs font-bold text-amber-600 hover:text-amber-700 transition"
-                >
-                  <Plus size={16} />
-                  Agregar variante
+                <button type="button" onClick={addVariant} className="flex items-center gap-2 text-xs font-bold text-amber-600 hover:text-amber-700 transition">
+                  <Plus size={16} /> Agregar variante / tipo
                 </button>
               </div>
 
-              <div className="grid gap-6">
-                {variants.map((variant, variantIndex) => (
-                  <div key={variantIndex} className="rounded-3xl border border-slate-100 bg-slate-50/50 p-6 space-y-6">
+              <div className="space-y-8">
+                {variants.map((variant, vIdx) => (
+                  <div key={vIdx} className="rounded-3xl border border-slate-100 bg-slate-50/50 p-8 space-y-8">
                     <div className="flex items-end gap-4">
-                      <div className="flex-1">
-                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nombre del Color / Variante</label>
-                        <input
-                          value={variant.color}
-                          onChange={(e) => updateVariantColor(variantIndex, e.target.value)}
-                          placeholder="Ej. Rojo, Azul, Negro"
-                          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-amber-400 transition"
-                          required
-                        />
+                      <div className="flex-1 space-y-2">
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Nombre del Tipo / Formato / Color</label>
+                        <input value={variant.color} onChange={(e) => updateVariantColor(vIdx, e.target.value)} placeholder="Ej. Vino Malbec, Vino Cabernet, Color Negro" className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-amber-400 transition" required />
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => removeVariant(variantIndex)}
-                        className="h-12 w-12 flex items-center justify-center rounded-2xl bg-red-50 text-red-500 hover:bg-red-100 transition"
-                      >
+                      <button type="button" onClick={() => removeVariant(vIdx)} className="h-12 w-12 flex items-center justify-center rounded-2xl bg-red-50 text-red-500 hover:bg-red-100 transition">
                         <Trash2 size={20} />
                       </button>
                     </div>
 
-                    <div className="space-y-4">
-                      <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Imágenes de la variante</label>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
-                        {/* Botón de subida */}
-                        <label className="aspect-square rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-amber-400 hover:bg-amber-50 transition group">
-                          <input
-                            type="file"
-                            multiple
-                            accept="image/*"
-                            onChange={(e) => addFilesToVariant(variantIndex, e.target.files)}
-                            className="hidden"
-                          />
-                          <Plus size={24} className="text-slate-300 group-hover:text-amber-500" />
-                          <span className="text-[10px] font-bold text-slate-400 group-hover:text-amber-600">Subir</span>
-                        </label>
-
-                        {/* Imágenes existentes */}
-                        {variant.images.map((imageUrl, imageIndex) => (
-                          <div key={imageUrl} className="relative aspect-square rounded-2xl overflow-hidden border border-slate-200 group">
-                            <img src={imageUrl} alt="Preview" className="h-full w-full object-cover" />
-                            <button
-                              type="button"
-                              onClick={() => removeVariantImage(variantIndex, imageIndex)}
-                              className="absolute inset-0 bg-red-500/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
-                            >
-                              <Trash2 size={20} />
-                            </button>
-                          </div>
-                        ))}
-
-                        {/* Archivos pendientes */}
-                        {variant.uploadFiles.map((file, fileIndex) => (
-                          <div key={fileIndex} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-amber-400 group">
-                            <div className="h-full w-full bg-amber-50 flex items-center justify-center">
-                              <ImageIcon size={24} className="text-amber-400" />
+                    <div className="grid lg:grid-cols-2 gap-8">
+                      {/* Imágenes de variante */}
+                      <div className="space-y-4">
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Imágenes</label>
+                        <div className="grid grid-cols-3 gap-3">
+                          <label className="aspect-square rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-amber-400 hover:bg-amber-50 transition">
+                            <input type="file" multiple accept="image/*" onChange={(e) => addFilesToVariant(vIdx, e.target.files)} className="hidden" />
+                            <Plus size={20} className="text-slate-300" />
+                            <span className="text-[9px] font-bold text-slate-400">Subir</span>
+                          </label>
+                          {variant.images.map((img, iIdx) => (
+                            <div key={iIdx} className="relative aspect-square rounded-2xl overflow-hidden border border-slate-200 group">
+                              <img src={img} className="h-full w-full object-cover" />
+                              <button type="button" onClick={() => removeVariantImage(vIdx, iIdx)} className="absolute inset-0 bg-red-500/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition"><Trash2 size={16} /></button>
                             </div>
-                            <button
-                              type="button"
-                              onClick={() => removeVariantUploadFile(variantIndex, fileIndex)}
-                              className="absolute inset-0 bg-red-500/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
-                            >
-                              <Trash2 size={20} />
-                            </button>
-                            <div className="absolute bottom-0 left-0 right-0 bg-amber-400 py-1 px-2">
-                              <p className="text-[8px] font-bold text-white truncate">{file.name}</p>
+                          ))}
+                          {variant.uploadFiles.map((file, fIdx) => (
+                            <div key={fIdx} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-amber-400 flex items-center justify-center bg-amber-50">
+                              <ImageIcon size={20} className="text-amber-400" />
+                              <button type="button" onClick={() => removeVariantUploadFile(vIdx, fIdx)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"><Trash2 size={10} /></button>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Precios de variante */}
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Escala de Precios para esta opción</label>
+                          <button type="button" onClick={() => addVariantPrice(vIdx)} className="text-[10px] font-bold text-amber-600 hover:underline">+ Agregar nivel</button>
+                        </div>
+                        <div className="space-y-3">
+                          {variant.prices.map((price, pIdx) => (
+                            <div key={pIdx} className="flex items-center gap-3 bg-white p-3 rounded-2xl border border-slate-100">
+                              <div className="flex-1 flex items-center gap-2">
+                                <span className="text-[10px] font-bold text-slate-400">Desde</span>
+                                <input type="number" value={price.min_qty} onChange={(e) => updateVariantPrice(vIdx, pIdx, 'min_qty', Number(e.target.value))} className="w-16 text-center border-b border-slate-200 outline-none focus:border-amber-400 text-sm" />
+                                <span className="text-[10px] font-bold text-slate-400">uds:</span>
+                                <div className="flex-1 relative">
+                                  <span className="absolute left-0 top-1/2 -translate-y-1/2 text-slate-400 text-xs">$</span>
+                                  <input type="number" value={price.price} onChange={(e) => updateVariantPrice(vIdx, pIdx, 'price', Number(e.target.value))} className="w-full pl-4 border-b border-slate-200 outline-none focus:border-amber-400 text-sm font-bold" />
+                                </div>
+                              </div>
+                              <button type="button" onClick={() => removeVariantPrice(vIdx, pIdx)} className="text-red-400 hover:text-red-600"><Trash2 size={14} /></button>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
             </section>
-
-            {/* Precios */}
-            <section className="space-y-6 pt-6 border-t border-slate-100">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-amber-500" />
-                  Escala de Precios
-                </h3>
-                <button
-                  type="button"
-                  onClick={addPriceTier}
-                  className="flex items-center gap-2 text-xs font-bold text-amber-600 hover:text-amber-700 transition"
-                >
-                  <Plus size={16} />
-                  Agregar nivel
-                </button>
-              </div>
-
-              <div className="grid gap-4">
-                {priceTiers.map((tier, index) => (
-                  <div key={index} className="flex items-end gap-4 p-4 rounded-2xl bg-slate-50/50 border border-slate-100">
-                    <div className="flex-1 grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Cant. Mínima</label>
-                        <input
-                          type="number"
-                          value={tier.min_qty}
-                          min={1}
-                          onChange={(e) => updatePriceTier(index, 'min_qty', Number(e.target.value))}
-                          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm outline-none focus:border-amber-400 transition"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Precio Unitario</label>
-                        <input
-                          type="number"
-                          value={tier.price}
-                          min={0}
-                          onChange={(e) => updatePriceTier(index, 'price', Number(e.target.value))}
-                          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm outline-none focus:border-amber-400 transition"
-                        />
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removePriceTier(index)}
-                      className="h-10 w-10 flex items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <div className="flex justify-end gap-4 pt-10 border-t border-slate-100">
-              <Link 
-                to="/admin/products" 
-                className="px-8 py-4 rounded-full border border-slate-200 bg-white text-sm font-bold text-slate-600 hover:bg-slate-50 transition"
-              >
-                Descartar
-              </Link>
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-12 py-4 rounded-full bg-slate-900 text-sm font-bold text-white hover:bg-slate-800 transition shadow-xl disabled:opacity-50"
-              >
-                {loading ? 'Guardando...' : 'Guardar Producto'}
-              </button>
-            </div>
           </form>
         </div>
       </div>
