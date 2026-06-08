@@ -22,7 +22,6 @@ const Footer: React.FC = () => {
                 <h3 className="font-playfair text-white font-medium mb-3">Secciones</h3>
                 <ul className="space-y-2">
                   <FooterLink to="#combos">Combos destacados</FooterLink>
-                  <FooterLink to="#categorias">Beneficios</FooterLink>
                   <FooterLink to="#como-funciona">Cómo funciona</FooterLink>
                   <FooterLink to="#empresas">Empresas</FooterLink>
                 </ul>
