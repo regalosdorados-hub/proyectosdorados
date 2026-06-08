@@ -50,7 +50,7 @@ const AuthRecovery: React.FC = () => {
         <section className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto rounded-[2rem] border border-slate-200/80 bg-slate-50 p-8 shadow-2xl shadow-slate-900/10">
             <div className="text-center mb-8">
-              <p className="text-sm uppercase tracking-[0.35em] text-amber-400">Actualizar contraseña</p>
+              <p className="text-sm uppercase tracking-[0.35em] text-amber-600">Actualizar contraseña</p>
               <h1 className="mt-4 text-4xl font-semibold text-slate-950">Recuperación de contraseña</h1>
               <p className="mt-3 text-base text-slate-600">
                 Ingresa una nueva contraseña para tu cuenta.

@@ -83,7 +83,7 @@ const OrderList: React.FC = () => {
   return (
     <AdminLayout>
       <div className="mb-8">
-        <p className="text-sm uppercase tracking-[0.35em] text-amber-500">Panel Admin</p>
+        <p className="text-sm uppercase tracking-[0.35em] text-amber-600">Panel Admin</p>
         <h1 className="mt-2 text-4xl font-semibold text-slate-950">Pedidos</h1>
         <p className="mt-2 text-slate-600">Gestiona las solicitudes de cotización y pedidos de empresas.</p>
       </div>

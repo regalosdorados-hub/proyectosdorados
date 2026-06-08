@@ -58,7 +58,7 @@ const ProductList: React.FC = () => {
     <AdminLayout>
       <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-sm uppercase tracking-[0.35em] text-amber-500">Panel Admin</p>
+          <p className="text-sm uppercase tracking-[0.35em] text-amber-600">Panel Admin</p>
           <h1 className="mt-2 text-4xl font-semibold text-slate-950">Productos</h1>
           <p className="mt-2 text-slate-600">Gestiona tu catálogo y el orden en que se muestran los productos.</p>
         </div>
