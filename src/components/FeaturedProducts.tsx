@@ -60,8 +60,8 @@ const FeaturedProducts: React.FC = () => {
           </div>
         )}
 
-        {/* Company Banner */}
-        <div id="empresas" className="mt-12 rounded-xl bg-[#F5F2EB] p-6 md:p-8">
+        {/* Company Banner - Removed duplicate ID 'empresas' */}
+        <div className="mt-12 rounded-xl bg-[#F5F2EB] p-6 md:p-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-4">
               <div className="hidden sm:flex h-12 w-12 items-center justify-center rounded-lg bg-white shadow-sm">
