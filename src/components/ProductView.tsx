@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { X, Share2, Minus, Plus, ShoppingCart, ChevronDown, ChevronUp } from 'lucide-center'
+import { X, Share2, Minus, Plus, ShoppingCart, ChevronDown, ChevronUp } from 'lucide-react'
 import { AspectRatio } from './ui/aspect-ratio'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../hooks/useCart'
