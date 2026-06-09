@@ -26,7 +26,7 @@ const FeaturedProducts: React.FC = () => {
     price: p.prices?.[0]?.price || 0,
     mainImage: p.variants?.[0]?.images?.[0] || p.images?.[0] || '',
     thumbnails: p.images || [],
-    formats: p.variants?.map(v => ({ id: v.color, name: v.color, available: true })) || [],
+    formats: p.variants?.map(v => ({ id: v.color, name: v.color, available: true, prices: v.prices })) || [],
     refCode: p.ref_code
   });
   

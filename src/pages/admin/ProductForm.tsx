@@ -67,7 +67,7 @@ const ProductForm: React.FC = () => {
           : [{
               color: 'Estándar',
               images: Array.isArray(data.images) ? data.images.filter(Boolean) : [],
-              prices: [{ min_qty: 1, price: 0 }],
+              prices: data.prices?.length ? data.prices : [{ min_qty: 1, price: 0 }],
               uploadFiles: [],
             }]
 
@@ -195,7 +195,7 @@ const ProductForm: React.FC = () => {
         display_order: displayOrder,
         variants: initialVariants,
         images: initialVariants.flatMap(v => v.images),
-        prices: globalPrices.filter(p => p.min_qty > 0 && p.price > 0).sort((a, b) => a.min_qty - b.min_qty),
+        prices: initialVariants[0]?.prices || [],
         updated_at: new Date(),
       }
 
