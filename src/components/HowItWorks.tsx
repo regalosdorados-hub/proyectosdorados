@@ -9,7 +9,7 @@ const steps = [
   {
     number: '02',
     title: 'Personalizalo',
-    description: 'Envianos tu logo y los mensajes que quieras incluir. Nosotros nos encargamos del diseño.'
+    description: 'Envianos tu logo y los mensajes que quieras incluir. Todos los regalos vienen con envoltorio y tarjeta personalizada.'
   },
   {
     number: '03',

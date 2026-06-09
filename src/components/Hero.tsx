@@ -33,9 +33,19 @@ const Hero: React.FC = () => {
               Celebra a quienes siempre están.
             </h2>
             
-            <p className="text-sm md:text-base text-white/90 max-w-md mb-6 leading-relaxed">
+            <p className="text-sm md:text-base text-white/90 max-w-md mb-5 leading-relaxed">
               Sorprende a tus colaboradores con un regalo significativo que reconoce su esfuerzo y dedicación.
             </p>
+
+            <div className="mb-6 flex items-center gap-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 max-w-md shadow-inner">
+              <div className="h-10 w-10 shrink-0 rounded-full bg-[#B8860B]/20 flex items-center justify-center text-[#B8860B]">
+                <Sparkles size={18} />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-white uppercase tracking-wider">Presentación Premium</p>
+                <p className="text-xs text-white/80 mt-0.5">Todos los regalos incluyen envoltorio y tarjeta personalizada.</p>
+              </div>
+            </div>
             
             <div className="flex flex-wrap items-center gap-4">
               <a

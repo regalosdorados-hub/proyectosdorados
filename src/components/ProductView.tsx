@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { X, Share2, Minus, Plus, ShoppingCart, ChevronDown, ChevronUp } from 'lucide-react'
+import { X, Share2, Minus, Plus, ShoppingCart, ChevronDown, ChevronUp, Sparkles } from 'lucide-react'
 import { AspectRatio } from './ui/aspect-ratio'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../hooks/useCart'
@@ -196,6 +196,11 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
                       </div>
                     ))}
                   </div>
+
+                  <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-amber-600 justify-center">
+                    <Sparkles size={12} className="shrink-0" />
+                    <span>Envoltorio y tarjeta personalizada incluidos</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -205,7 +210,7 @@ const ProductView: React.FC<ProductViewProps> = ({ product, isOpen, onClose }) =
                 <ShoppingCart size={20} />
                 Agregar al carrito
               </button>
-              <p className="text-center text-[10px] text-slate-400 mt-4 uppercase tracking-widest">Envío en Ciudad de Córdoba • Factura A disponible</p>
+              <p className="text-center text-[10px] text-slate-400 mt-4 uppercase tracking-widest">Envío en Ciudad de Córdoba • Envoltorio y Tarjeta Personalizada Incluidos • Factura A disponible</p>
             </div>
           </div>
         </div>
